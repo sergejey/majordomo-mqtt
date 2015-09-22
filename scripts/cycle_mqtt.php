@@ -73,7 +73,7 @@ while ($mqtt_client->proc())
    
       setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
   
-      if (file_exists('./reboot') || $_GET['onetime'])
+      if (file_exists('./reboot') || IsSet($_GET['onetime']))
       {
          $db->Disconnect();
          exit;
