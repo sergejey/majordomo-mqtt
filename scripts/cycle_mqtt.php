@@ -54,9 +54,16 @@ else
 
 $mqtt_client = new phpMQTT($host, $port, "MajorDoMo MQTT Client");
 
-if (!$mqtt_client->connect())
+if ($mqtt->config['MQTT_AUTH'])
 {
-   exit(1);
+  if (!$mqtt_client->connect(true, NULL, $username, $password)) {
+    exit(1);
+  }
+} else {
+  if (!$mqtt_client->connect())
+  {
+    exit(1);
+  }
 }
 
 $topics[$query] = array("qos" => 0, "function" => "procmsg");
