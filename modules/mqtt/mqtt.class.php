@@ -155,6 +155,11 @@ function run() {
   $mqtt_client->publish($rec['PATH'],$value); /*$topic, $content, $qos = 0, $retain = 0*/
   $mqtt_client->close();
 
+  $rec['VALUE']=$value;
+  $rec['UPDATED']=date('Y-m-d H:i:s');
+  SQLUpdate('mqtt', $rec);
+
+
   if ($set_linked && $rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
    setGlobal($rec['LINKED_OBJECT'].'.'.$rec['LINKED_PROPERTY'], $value, array($this->name=>'0'));
   }
