@@ -52,7 +52,7 @@ else
    $query = '/var/now/#';
 }
 
-$mqtt_client = new phpMQTT($host, $port, "MajorDoMo MQTT Client");
+$mqtt_client = new phpMQTT($host, $port, "MajorDoMo MQTT Cycle");
 
 if ($mqtt->config['MQTT_AUTH'])
 {
@@ -100,7 +100,7 @@ function procmsg($topic, $msg)
 {
    global $mqtt;
    $mqtt->processMessage($topic, $msg);
-   echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
+   //echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
 }
 
  $db->Disconnect(); // closing database connection
