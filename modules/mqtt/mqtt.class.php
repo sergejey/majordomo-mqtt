@@ -207,6 +207,7 @@ function admin(&$out) {
  }
 
  $this->getConfig();
+ $out['MQTT_CLIENT']=$this->config['MQTT_CLIENT'];
  $out['MQTT_HOST']=$this->config['MQTT_HOST'];
  $out['MQTT_PORT']=$this->config['MQTT_PORT'];
  $out['MQTT_QUERY']=$this->config['MQTT_QUERY'];
@@ -226,6 +227,7 @@ function admin(&$out) {
  $out['MQTT_AUTH']=$this->config['MQTT_AUTH'];
 
  if ($this->view_mode=='update_settings') {
+   global $mqtt_client;
    global $mqtt_host;
    global $mqtt_username;
    global $mqtt_password;
@@ -233,13 +235,17 @@ function admin(&$out) {
    global $mqtt_port;
    global $mqtt_query;
 
-   $this->config['MQTT_HOST']=$mqtt_host;
-   $this->config['MQTT_USERNAME']=$mqtt_username;
-   $this->config['MQTT_PASSWORD']=$mqtt_password;
+   $this->config['MQTT_CLIENT']=trim($mqtt_client);
+   $this->config['MQTT_HOST']=trim($mqtt_host);
+   $this->config['MQTT_USERNAME']=trim($mqtt_username);
+   $this->config['MQTT_PASSWORD']=trim($mqtt_password);
    $this->config['MQTT_AUTH']=(int)$mqtt_auth;
    $this->config['MQTT_PORT']=(int)$mqtt_port;
    $this->config['MQTT_QUERY']=trim($mqtt_query);
    $this->saveConfig();
+
+   setGlobal('cycle_mqttControl', 'restart');
+
    $this->redirect("?");
  }
 

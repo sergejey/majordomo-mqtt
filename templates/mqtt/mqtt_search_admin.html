@@ -6,6 +6,15 @@
 &nbsp;
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
 <fieldset>
+
+<div class="form-group">
+ <label class="control-label"[#if ERR_MQTT_CLIENT#] style="color:red;font-weight:bold"[#endif#]>
+ MajorDoMo Client:
+ </label>
+ <div class="controls"><input type="text" name="mqtt_client" value="<#MQTT_CLIENT#>" class="input"></div>
+</div>
+
+
 <div class="form-group">
  <label class="control-label"[#if ERR_MQTT_HOST#] style="color:red;font-weight:bold"[#endif#]>
  Hostname:
@@ -72,13 +81,17 @@
 <form action="?" method="get" name="frmFilter">
 <table border="0">
  <tr>
+  <td valign="top"><input type="text" name="title" value="<#TITLE#>" class="form-control" placeholder="<#LANG_SEARCH#>"></td>
   <td>
-  <select class="form-control" name="location_id" onChange="document.frmFilter.submit();">
+  <select class="form-control" name="location_id">
    <option value="0"><#LANG_FILTER_BY_LOCATION#> (<#LANG_ALL#>)
    [#begin LOCATIONS#]
    <option value="[#ID#]"[#if ID="<#LOCATION_ID#>"#] selected[#endif#]>[#TITLE#]
    [#end LOCATIONS#]
   </select>
+  </td>
+  <td valign="top">
+    <input type="submit" name="submit" value="<#LANG_SEARCH#>" class="btn btn-default">
   </td>
  </tr>
 </table>

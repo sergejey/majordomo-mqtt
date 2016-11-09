@@ -21,6 +21,12 @@ include_once(DIR_MODULES . "mqtt/mqtt.class.php");
 $mqtt = new mqtt();
 $mqtt->getConfig();
 
+if ($mqtt->config['MQTT_CLIENT']) {
+ $client_name=$mqtt->config['MQTT_CLIENT'];
+} else {
+ $client_name="MajorDoMo MQTT Cycle";
+}
+
 if ($mqtt->config['MQTT_AUTH'])
 {
    $username = $mqtt->config['MQTT_USERNAME'];
@@ -52,7 +58,7 @@ else
    $query = '/var/now/#';
 }
 
-$mqtt_client = new phpMQTT($host, $port, "MajorDoMo MQTT Cycle");
+$mqtt_client = new phpMQTT($host, $port, $client_name);
 
 if ($mqtt->config['MQTT_AUTH'])
 {

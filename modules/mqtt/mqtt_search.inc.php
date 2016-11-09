@@ -11,7 +11,7 @@
   //searching 'TITLE' (varchar)
   global $title;
   if ($title!='') {
-   $qry.=" AND TITLE LIKE '%".DBSafe($title)."%'";
+   $qry.=" AND (TITLE LIKE '%".DBSafe($title)."%' OR VALUE LIKE '%".DBSafe($title)."%' OR PATH LIKE '%".DBSafe($title)."%')";
    $out['TITLE']=$title;
   }
 
