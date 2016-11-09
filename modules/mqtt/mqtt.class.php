@@ -131,6 +131,12 @@ function run() {
 
   $this->getConfig();
 
+  if ($mqtt->config['MQTT_CLIENT']) {
+   $client_name=$mqtt->config['MQTT_CLIENT'];
+  } else {
+   $client_name="MajorDoMo MQTT";
+  }
+
   if ($this->config['MQTT_AUTH']) {
    $username=$this->config['MQTT_USERNAME'];
    $password=$this->config['MQTT_PASSWORD'];
@@ -146,7 +152,7 @@ function run() {
    $port=1883;
   }
 
-  $mqtt_client = new phpMQTT($host, $port, "MajorDoMo MQTT Client");
+  $mqtt_client = new phpMQTT($host, $port, $client_name.' Client');
 
   if(!$mqtt_client->connect(true, NULL,$username,$password)) /*Clean, Will, User, Password*/
   {
