@@ -19,6 +19,8 @@ require("./lib/mqtt/phpMQTT.php");
 include_once(DIR_MODULES . "mqtt/mqtt.class.php");
 
 $mqtt = new mqtt();
+
+$mqtt->prepareQueueTable();
 $mqtt->getConfig();
 
 if ($mqtt->config['MQTT_CLIENT']) {
@@ -78,6 +80,15 @@ $previousMillis = 0;
 
 while ($mqtt_client->proc())
 {
+
+   $tmp=SQLSelect("SELECT * FROM mqtt_queue ORDER BY ID");
+   if ($tmp[0]['ID']) {
+    $total=count($tmp);
+    for($i=0;$i<$total;$i++) {
+     $mqtt_client->publish($tmp[$i]['PATH'],$tmp[$i]['VALUE']);
+    }
+   }
+
    $currentMillis = round(microtime(true) * 10000);
    
    if ($currentMillis - $previousMillis > 10000)

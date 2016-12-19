@@ -114,6 +114,16 @@ function run() {
   $this->result=$p->result;
 }
 
+  function prepareQueueTable() {
+   //SQLExec ("DROP TABLE IF EXISTS `mqtt_queue`;");
+   $sqlQuery = "CREATE TABLE IF NOT EXISTS `mqtt_queue`
+               (`ID`  int(10) unsigned NOT NULL auto_increment,
+                `PATH` varchar(255) NOT NULL,
+                `VALUE` varchar(255) NOT NULL,
+                 PRIMARY KEY (`ID`)
+               ) ENGINE = MEMORY DEFAULT CHARSET=utf8;";
+    SQLExec ( $sqlQuery );   
+  }
 
 /**
 * Title
@@ -127,6 +137,14 @@ function run() {
   if (!$rec['ID'] || !$rec['PATH']) {
    return 0;
   }
+
+  $this->prepareQueueTable();
+  $data=array();
+  $data['PATH']=$rec['PATH'];
+  $data['VALUE']=$value;
+  SQLInsert('mqtt_queue', $data);
+
+  /*
   include_once("./lib/mqtt/phpMQTT.php");
 
   $this->getConfig();
@@ -154,14 +172,15 @@ function run() {
 
   $mqtt_client = new phpMQTT($host, $port, $client_name.' Client');
 
-  if(!$mqtt_client->connect(true, NULL,$username,$password)) /*Clean, Will, User, Password*/
+  if(!$mqtt_client->connect(true, NULL,$username,$password))
   {
    return 0;
   }
-  $mqtt_client->publish($rec['PATH'],$value); /*$topic, $content, $qos = 0, $retain = 0*/
+  $mqtt_client->publish($rec['PATH'],$value);
   $mqtt_client->close();
+  */
 
-  $rec['VALUE']=$value;
+  $rec['VALUE']=$value.'';
   $rec['UPDATED']=date('Y-m-d H:i:s');
   SQLUpdate('mqtt', $rec);
 
@@ -192,7 +211,7 @@ function run() {
    $rec['TITLE']=$path;
    $rec['ID']=SQLInsert('mqtt', $rec);
   }
-  $rec['VALUE']=$value;
+  $rec['VALUE']=$value.'';
   $rec['UPDATED']=date('Y-m-d H:i:s');
   SQLUpdate('mqtt', $rec);
   if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
