@@ -85,6 +85,7 @@ while ($mqtt_client->proc())
    if ($tmp[0]['ID']) {
     $total=count($tmp);
     for($i=0;$i<$total;$i++) {
+     SQLExec('DELETE FROM mqtt_queue WHERE ID='.$tmp[$i]['ID']);
      $mqtt_client->publish($tmp[$i]['PATH'],$tmp[$i]['VALUE']);
     }
    }
