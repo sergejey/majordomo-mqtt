@@ -138,46 +138,52 @@ function run() {
    return 0;
   }
 
-  $this->prepareQueueTable();
-  $data=array();
-  $data['PATH']=$rec['PATH'];
-  $data['VALUE']=$value;
-  SQLInsert('mqtt_queue', $data);
 
-  /*
+  //if ($new_connection) {
+
   include_once("./lib/mqtt/phpMQTT.php");
 
-  $this->getConfig();
+   $this->getConfig();
+   if ($mqtt->config['MQTT_CLIENT']) {
+    $client_name=$mqtt->config['MQTT_CLIENT'];
+   } else {
+    $client_name="MajorDoMo MQTT";
+   }
 
-  if ($mqtt->config['MQTT_CLIENT']) {
-   $client_name=$mqtt->config['MQTT_CLIENT'];
+   if ($this->config['MQTT_AUTH']) {
+    $username=$this->config['MQTT_USERNAME'];
+    $password=$this->config['MQTT_PASSWORD'];
+   }
+   if ($this->config['MQTT_HOST']) {
+    $host=$this->config['MQTT_HOST'];
+   } else {
+    $host='localhost';
+   }
+   if ($this->config['MQTT_PORT']) {
+    $port=$this->config['MQTT_PORT'];
+   } else {
+    $port=1883;
+   }
+
+   $mqtt_client = new phpMQTT($host, $port, $client_name.' Client');
+
+   if(!$mqtt_client->connect(true, NULL,$username,$password))
+   {
+    return 0;
+   }
+   $mqtt_client->publish($rec['PATH'],$value);
+   $mqtt_client->close();
+
+  /*
   } else {
-   $client_name="MajorDoMo MQTT";
-  }
 
-  if ($this->config['MQTT_AUTH']) {
-   $username=$this->config['MQTT_USERNAME'];
-   $password=$this->config['MQTT_PASSWORD'];
-  }
-  if ($this->config['MQTT_HOST']) {
-   $host=$this->config['MQTT_HOST'];
-  } else {
-   $host='localhost';
-  }
-  if ($this->config['MQTT_PORT']) {
-   $port=$this->config['MQTT_PORT'];
-  } else {
-   $port=1883;
-  }
+   $this->prepareQueueTable();
+   $data=array();
+   $data['PATH']=$rec['PATH'];
+   $data['VALUE']=$value;
+   SQLInsert('mqtt_queue', $data);
 
-  $mqtt_client = new phpMQTT($host, $port, $client_name.' Client');
-
-  if(!$mqtt_client->connect(true, NULL,$username,$password))
-  {
-   return 0;
   }
-  $mqtt_client->publish($rec['PATH'],$value);
-  $mqtt_client->close();
   */
 
   $rec['VALUE']=$value.'';
