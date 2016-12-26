@@ -134,6 +134,7 @@ function run() {
 */
  function setProperty($id, $value, $set_linked=0) {
   $rec=SQLSelectOne("SELECT * FROM mqtt WHERE ID='".$id."'");
+
   if (!$rec['ID'] || !$rec['PATH']) {
    return 0;
   }
@@ -171,7 +172,12 @@ function run() {
    {
     return 0;
    }
-   $mqtt_client->publish($rec['PATH'],$value);
+
+   if ($rec['PATH_WRITE']) {
+    $mqtt_client->publish($rec['PATH_WRITE'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+   } else {
+    $mqtt_client->publish($rec['PATH'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+   }
    $mqtt_client->close();
 
   /*
@@ -394,8 +400,11 @@ mqtt - MQTT
  mqtt: UPDATED datetime
  mqtt: VALUE varchar(255) NOT NULL DEFAULT ''
  mqtt: PATH varchar(255) NOT NULL DEFAULT ''
+ mqtt: PATH_WRITE varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_OBJECT varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT ''
+ mqtt: QOS int(3) NOT NULL DEFAULT '0'
+ mqtt: RETAIN int(3) NOT NULL DEFAULT '0'
 EOD;
   parent::dbInstall($data);
  }

@@ -47,6 +47,37 @@
 </div>
 
 <div class="form-group">
+ <label class="control-label">
+ <#LANG_PATH#> (write):
+ (<#LANG_OPTIONAL#>)
+ </label>
+ <div class="controls"><input  type="text" name="path_write" value="[#PATH_WRITE#]" class="input form-control"></div>
+</div>
+
+<div class="form-group">
+ <label class="control-label">
+ QoS:
+ (<#LANG_OPTIONAL#>)
+ </label>
+ <div class="controls">
+ <input type="radio" name="qos" value="0"[#if QOS="0"#] checked[#endif#]> 0
+ <input type="radio" name="qos" value="1"[#if QOS="1"#] checked[#endif#]> 1
+ <input type="radio" name="qos" value="2"[#if QOS="2"#] checked[#endif#]> 2
+ </div>
+</div>
+
+<div class="form-group">
+ <label class="control-label">
+ Retain:
+ (<#LANG_OPTIONAL#>)
+ </label>
+ <div class="controls">
+ <input type="radio" name="ratain" value="0"[#if RETAIN!="1"#] checked[#endif#]> <#LANG_NO#>
+ <input type="radio" name="retain" value="1"[#if RETAIN="1"#] checked[#endif#]> <#LANG_YES#>
+ </div>
+</div>
+
+<div class="form-group">
  <label class="control-label"[#if ERR_VALUE#] style="color:red;font-weight:bold"[#endif#]>
  <#LANG_VALUE#>:
  </label>

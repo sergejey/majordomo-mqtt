@@ -31,6 +31,16 @@
     $ok=0;
    }
 
+   global $path_write;
+   $rec['PATH_WRITE']=trim($path_write);
+
+   global $qos;
+   $rec['QOS']=(int)$qos;
+
+   global $retain;
+   $rec['RETAIN']=(int)$retain;
+
+
    $old_linked_object=$rec['LINKED_OBJECT'];
    $old_linked_property=$rec['LINKED_PROPERTY'];
 
