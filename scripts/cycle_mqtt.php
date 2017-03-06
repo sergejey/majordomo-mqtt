@@ -20,7 +20,7 @@ include_once(DIR_MODULES . "mqtt/mqtt.class.php");
 
 $mqtt = new mqtt();
 
-$mqtt->prepareQueueTable();
+//$mqtt->prepareQueueTable();
 $mqtt->getConfig();
 
 if ($mqtt->config['MQTT_CLIENT']) {
@@ -74,13 +74,24 @@ if ($mqtt->config['MQTT_AUTH'])
   }
 }
 
-$topics[$query] = array("qos" => 0, "function" => "procmsg");
+$query_list=explode(',', $query);
+$total=count($query_list);
+echo date('H:i:s')." Topics to watch: $query (Total: $total)\n";
+for($i=0;$i<$total;$i++) {
+ $path=trim($query_list[$i]);
+ echo date('H:i:s')." Path: $path\n";
+ $topics[$path] = array("qos" => 0, "function" => "procmsg");
+}
+foreach($topics as $k=>$v) {
+ echo date('H:i:s')." Subscribing to: $k\n";
+}
 $mqtt_client->subscribe($topics, 0);
 $previousMillis = 0;
 
 while ($mqtt_client->proc())
 {
 
+   /*
    $tmp=SQLSelect("SELECT * FROM mqtt_queue ORDER BY ID");
    if ($tmp[0]['ID']) {
     $total=count($tmp);
@@ -89,6 +100,7 @@ while ($mqtt_client->proc())
      $mqtt_client->publish($tmp[$i]['PATH'],$tmp[$i]['VALUE']);
     }
    }
+   */
 
    $currentMillis = round(microtime(true) * 10000);
    
