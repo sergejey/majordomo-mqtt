@@ -56,6 +56,15 @@
 
 <div class="form-group">
  <label class="control-label">
+ Not display write path in list:
+ </label>
+ <div class="controls">
+ <input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1"#]checked[#endif#]>
+ </div>
+</div>
+
+<div class="form-group">
+ <label class="control-label">
  QoS:
  (<#LANG_OPTIONAL#>)
  </label>

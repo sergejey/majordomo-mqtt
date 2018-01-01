@@ -33,6 +33,9 @@
 
    global $path_write;
    $rec['PATH_WRITE']=trim($path_write);
+   
+   global $disp_flag;
+   $rec['DISP_FLAG']=(int)$disp_flag;
 
    global $qos;
    $rec['QOS']=(int)$qos;
@@ -75,7 +78,7 @@
    }
 
    global $new_value;
-   if ($new_value) {
+   if ($new_value!=='') {
     $rec['VALUE']=$new_value;
     SQLUpdate('mqtt', $rec);
     $this->setProperty($rec['ID'], $new_value, 1);
