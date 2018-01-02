@@ -211,24 +211,38 @@ function run() {
 * @access public
 */
  function processMessage($path, $value) {
-
-  if (preg_match('/\#$/', $path)) {
-   return 0;
-  }
-
-  $rec=SQLSelectOne("SELECT * FROM mqtt WHERE PATH LIKE '".DBSafe($path)."'");
-
-  if (!$rec['ID']) {
-   $rec['PATH']=$path;
-   $rec['TITLE']=$path;
-   $rec['ID']=SQLInsert('mqtt', $rec);
-  }
-  $rec['VALUE']=$value.'';
-  $rec['UPDATED']=date('Y-m-d H:i:s');
-  SQLUpdate('mqtt', $rec);
-  if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
-   setGlobal($rec['LINKED_OBJECT'].'.'.$rec['LINKED_PROPERTY'], $rec['VALUE'], array('mqtt'=>'0'));
-  }
+   if (preg_match('/\#$/', $path)) {
+    return 0;
+   }
+   /* Search 'PATH' in database (db) */
+   $rec=SQLSelectOne("SELECT * FROM mqtt WHERE PATH LIKE '".DBSafe($path)."'");
+   
+   if(!$rec['ID']){ /* If 'PATH' not found in db */
+     /* New query to search 'PATH_WRITE' record in db */
+     $rec=SQLSelectOne("SELECT * FROM mqtt WHERE PATH_WRITE LIKE '".DBSafe($path)."'");
+     
+     if($rec['ID']) { /* If path_write foud in db */
+       if($rec['DISP_FLAG']!="0"){ /* check disp_flag */
+         return 0; /* ignore message if flag checked */
+       }
+     }
+     /* Insert new record in db */
+     $rec['PATH']=$path;
+     $rec['TITLE']=$path;
+     $rec['VALUE']=$value.'';
+     $rec['UPDATED']=date('Y-m-d H:i:s');
+     $rec['ID']=null;
+     SQLInsert('mqtt', $rec);
+   }else{
+     /* Update values in db */
+     $rec['VALUE']=$value.'';
+     $rec['UPDATED']=date('Y-m-d H:i:s');
+     SQLUpdate('mqtt', $rec);
+     /* Update property in linked object if it exist */
+     if($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
+       setGlobal($rec['LINKED_OBJECT'].'.'.$rec['LINKED_PROPERTY'], $rec['VALUE'], array('mqtt'=>'0'));
+     }
+   }
  }
 
 /**
@@ -405,6 +419,7 @@ mqtt - MQTT
  mqtt: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT ''
  mqtt: QOS int(3) NOT NULL DEFAULT '0'
  mqtt: RETAIN int(3) NOT NULL DEFAULT '0'
+ mqtt: DISP_FLAG int(3) NOT NULL DEFAULT '0'
 EOD;
   parent::dbInstall($data);
  }
