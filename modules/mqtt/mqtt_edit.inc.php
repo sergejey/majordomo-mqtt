@@ -33,6 +33,9 @@
 
    global $path_write;
    $rec['PATH_WRITE']=trim($path_write);
+   
+   global $disp_flag;
+   $rec['DISP_FLAG']=(int)$disp_flag;
 
    global $qos;
    $rec['QOS']=(int)$qos;
