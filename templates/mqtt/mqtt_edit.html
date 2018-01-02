@@ -59,7 +59,8 @@
  Not display write path in list:
  </label>
  <div class="controls">
- <input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1"#]checked[#endif#]>
+  <input type="hidden" name="disp_flag" value="0"> <!-- value for unchecked checkbox -->
+  <input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1"#]checked[#endif#]>
  </div>
 </div>
 
