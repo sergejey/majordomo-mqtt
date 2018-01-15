@@ -125,6 +125,49 @@ function run() {
     SQLExec ( $sqlQuery );   
   }
 
+    function pathToTree($array){
+        $tree = array();
+        foreach($array AS $item) {
+            $pathIds = explode("/", ltrim($item["PATH"], "/") .'/'. $item["ID"]);
+            $current = &$tree;
+            $cp='';
+            foreach($pathIds AS $id) {
+                if(!isset($current["CHILDS"][$id])) {
+                    $current["CHILDS"][$id] = array('CP'=>$cp);
+                }
+                $current = &$current["CHILDS"][$id];
+                if($id == $item["ID"]) {
+                    $current = $item;
+                }
+            }
+        }
+        return ($this->childsToArray($tree['CHILDS']));
+    }
+
+    function childsToArray($items,$prev_path='') {
+        $res=array();
+        foreach($items as $k=>$v) {
+            if (!$v['PATH']) {
+                $v['TITLE']=$k.' '.$v['CP'];
+            } else {
+                $tmp=explode('/',$v['PATH']);
+                $v['TITLE']=$tmp[count($tmp)-1];
+                //$v['TITLE']=$v['PATH'];
+            }
+            if (isset($v['CHILDS'])) {
+                $items=$this->childsToArray($v['CHILDS']);
+                if (count($items)==1) {
+                    $v=$items[0];
+                } else {
+                    $v['RESULT']=$items;
+                }
+                unset($v['CHILDS']);
+            }
+            $res[]=$v;
+        }
+        return $res;
+    }
+
 /**
 * Title
 *
@@ -325,8 +368,21 @@ function admin(&$out) {
    $this->delete_mqtt($this->id);
    $this->redirect("?");
   }
+     if ($this->view_mode=='clear_trash') {
+         $this->clear_trash();
+         $this->redirect("?");
+     }
  }
 }
+
+function clear_trash() {
+    $res=SQLSelect("SELECT ID FROM mqtt WHERE LINKED_OBJECT='' AND LINKED_PROPERTY=''");
+    $total = count($res);
+    for ($i=0;$i<$total;$i++) {
+        $this->delete_mqtt($res[$i]['ID']);
+    }
+}
+
 /**
 * FrontEnd
 *
@@ -335,6 +391,22 @@ function admin(&$out) {
 * @access public
 */
 function usual(&$out) {
+    if ($this->ajax) {
+        global $op;
+        $result=array();
+        if ($op=='getvalues') {
+            global $ids;
+            if (!is_array($ids)) {
+                $ids=array(0);
+            } else {
+                $ids[]=0;
+            }
+            $data=SQLSelect("SELECT ID,VALUE FROM mqtt WHERE ID IN (".implode(',',$ids).")");
+            $result['DATA']=$data;
+        }
+        echo json_encode($result);
+        exit;
+    }
  $this->admin($out);
 }
 /**

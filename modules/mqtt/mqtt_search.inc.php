@@ -52,19 +52,41 @@
   //if (!$sortby_mqtt) $sortby_mqtt="ID DESC";
   $sortby_mqtt="UPDATED DESC";
   $out['SORTBY']=$sortby_mqtt;
+
+  global $tree;
+  if (!isset($tree)) {
+   $tree=(int)$session->data['MQTT_TREE_VIEW'];
+  } else {
+   $session->data['MQTT_TREE_VIEW']=$tree;
+  }
+  if ($tree) {
+   $out['TREE']=1;
+  }
+
   // SEARCH RESULTS
+  if ($out['TREE']) {
+   $sortby_mqtt='PATH';
+  }
   $res=SQLSelect("SELECT * FROM mqtt WHERE $qry ORDER BY ".$sortby_mqtt);
   if ($res[0]['ID']) {
-   paging($res, 50, $out); // search result paging
-   colorizeArray($res);
+   if (!$out['TREE']) {
+    paging($res, 50, $out); // search result paging
+   }
    $total=count($res);
    for($i=0;$i<$total;$i++) {
     // some action for every record if required
-    $tmp=explode(' ', $res[$i]['UPDATED']);
-    $res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];
+    //$tmp=explode(' ', $res[$i]['UPDATED']);
+    //$res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];
+    if ($res[$i]['TITLE']==$res[$i]['PATH'] && !$out['TREE']) $res[$i]['PATH']='';
    }
    $out['RESULT']=$res;
+
+   if ($out['TREE']) {
+    $out['RESULT']=$this->pathToTree($res);
+   }
+
   }
+
 
   $out['LOCATIONS']=SQLSelect("SELECT * FROM locations ORDER BY TITLE");
 
