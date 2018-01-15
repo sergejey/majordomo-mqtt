@@ -226,15 +226,20 @@ function run() {
          return 0; /* ignore message if flag checked */
        }
      }
-     /* Insert new record in db */
-     $rec['PATH']=$path;
-     $rec['TITLE']=$path;
-     $rec['VALUE']=$value.'';
-     $rec['UPDATED']=date('Y-m-d H:i:s');
+     /* Init new record */
+	 $rec['ID']=null;
+	 $rec['TITLE']=$path;
 	 $rec['LOCATION_ID']=0;
+	 $rec['UPDATED']=date('Y-m-d H:i:s');
+	 $rec['VALUE']=$value.'';
+	 $rec['PATH']=$path;
+	 $rec['PATH_WRITE']='';
 	 $rec['LINKED_OBJECT']='';
 	 $rec['LINKED_PROPERTY']='';
-     $rec['ID']=null;
+	 $rec['QOS']=0;
+	 $rec['RETAIN']=0;
+	 $rec['DISP_FLAG']=0;
+	 /* Insert new record in db */
      SQLInsert('mqtt', $rec);
    }else{
      /* Update values in db */
