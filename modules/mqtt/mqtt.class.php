@@ -231,6 +231,9 @@ function run() {
      $rec['TITLE']=$path;
      $rec['VALUE']=$value.'';
      $rec['UPDATED']=date('Y-m-d H:i:s');
+	 $rec['LOCATION_ID']=0;
+	 $rec['LINKED_OBJECT']='';
+	 $rec['LINKED_PROPERTY']='';
      $rec['ID']=null;
      SQLInsert('mqtt', $rec);
    }else{
