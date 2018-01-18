@@ -123,11 +123,11 @@
 [#if TREE="1"#]
 <ul>
  [#begin RESULT#]
- <li>
+ <li style="list-style-type: none">
   [#if ID!=""#]
-  <a href="?view_mode=edit_mqtt&id=[#ID#]">[#TITLE#]</a> <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
+  [#if TITLE!=""#]<b>&bull;</b>&nbsp;[#endif#]<a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]">[#if TITLE=""#]<b>&bull;</b>&nbsp;[#else#][#TITLE#][#endif#]</a> <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
   [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
-  [#else#]<b>[#TITLE#]</b>[#endif#]
+  [#else#]<b>&bull;&nbsp;[#TITLE#]</b>[#endif#]
   [#if RESULT#]<ul>[#tree RESULT#]</ul>[#endif RESULT#]
  </li>
  [#end RESULT#]
