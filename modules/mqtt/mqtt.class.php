@@ -146,18 +146,20 @@ function run() {
 
     function childsToArray($items,$prev_path='') {
         $res=array();
-        foreach($items as $k=>$v) {
+        foreach($items as $k=>$v) {  
             if (!$v['PATH']) {
                 $v['TITLE']=$k.' '.$v['CP'];
-            } else {
-                $tmp=explode('/',$v['PATH']);
-                $v['TITLE']=$tmp[count($tmp)-1];
-                //$v['TITLE']=$v['PATH'];
+                $pp = $k; 
+            }
+            else {
+                $v['TITLE'] = '';
+                $pp = '';
             }
             if (isset($v['CHILDS'])) {
-                $items=$this->childsToArray($v['CHILDS']);
+                $items=$this->childsToArray($v['CHILDS'],$prev_path ? $prev_path.'/'.$pp : $pp);
                 if (count($items)==1) {
-                    $v=$items[0];
+                    $v=$items[0];     
+                    $v['TITLE'] = $pp.($v['TITLE'] ? '/'.$v['TITLE'] : '');
                 } else {
                     $v['RESULT']=$items;
                 }
