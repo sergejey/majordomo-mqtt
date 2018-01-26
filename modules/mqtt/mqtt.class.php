@@ -156,10 +156,10 @@ function run() {
                 $pp = '';
             }
             if (isset($v['CHILDS'])) {
-                $items=$this->childsToArray($v['CHILDS'],$prev_path ? $prev_path.'/'.$pp : $pp);
+                $items=$this->childsToArray($v['CHILDS'],$prev_path!='' ? $prev_path.'/'.$pp : $pp);
                 if (count($items)==1) {
                     $v=$items[0];     
-                    $v['TITLE'] = $pp.($v['TITLE'] ? '/'.$v['TITLE'] : '');
+                    $v['TITLE'] = $pp.($v['TITLE']!='' ? '/'.$v['TITLE'] : '');
                 } else {
                     $v['RESULT']=$items;
                 }
