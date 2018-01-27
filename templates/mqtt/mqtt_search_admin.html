@@ -70,34 +70,39 @@
 </form>
 </div>
 
-<br>
-<!-- table mqtt search -->
-<p>
-<a href="?view_mode=edit_mqtt" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#></a>
-</p>
-
 &nbsp;
 
 <form action="?" method="get" name="frmFilter">
-<table border="0">
- <tr>
-  <td valign="top"><input type="text" name="title" value="<#TITLE#>" class="form-control" placeholder="<#LANG_SEARCH#>"></td>
-  <td>
+ <div class="row">
+
+  <div class="col-md-3">
+<input type="text" name="title" value="<#TITLE#>" class="form-control" placeholder="<#LANG_SEARCH#>">
+  </div>
+  <div class="col-md-3">
   <select class="form-control" name="location_id">
    <option value="0"><#LANG_FILTER_BY_LOCATION#> (<#LANG_ALL#>)
    [#begin LOCATIONS#]
    <option value="[#ID#]"[#if ID="<#LOCATION_ID#>"#] selected[#endif#]>[#TITLE#]
    [#end LOCATIONS#]
   </select>
-  </td>
-  <td valign="top">
+  </div>
+  <div class="col-md-2">
     <input type="submit" name="submit" value="<#LANG_SEARCH#>" class="btn btn-default">
-  </td>
- </tr>
-</table>
+  </div>
+  <div class="col-md-2">
+   [#if TREE="1"#]
+   <a href="?tree=0" class="btn btn-default"><#LANG_LIST_VIEW#></a>
+   [#else#]
+   <a href="?tree=1" class="btn btn-default"><#LANG_TREE_VIEW#></a>
+   [#endif#]
+  </div>
+  <div class="col-md-2">
+   <a href="?view_mode=edit_mqtt" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> <#LANG_ADD#></a>
+   <a href="?view_mode=clear_trash" class="btn btn-default" title="Delete not linked topics." onclick="return confirm('<#LANG_ARE_YOU_SURE#>');"><i class="glyphicon glyphicon-floppy-remove"></i> <#LANG_OPTIMIZE#></a>
+  </div>
+ </div>
 </form>
-
-
+&nbsp;
 
 <!-- results -->
 [#if RESULT#]
@@ -115,7 +120,19 @@
 [#endif PAGES#]
 <!-- / paging -->
 <!-- search results (list) -->
-<form action="?" method="post" name="frmList_mqtt" style="padding:0px" class="form">
+[#if TREE="1"#]
+<ul>
+ [#begin RESULT#]
+ <li style="list-style-type: none">
+  [#if ID!=""#]
+  [#if TITLE!=""#]<b>&bull;</b>&nbsp;[#endif#]<a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]">[#if TITLE=""#]<b>&bull;</b>&nbsp;[#else#][#TITLE#][#endif#]</a> <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
+  [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
+  [#else#]<b>&bull;&nbsp;[#TITLE#]</b>[#endif#]
+  [#if RESULT#]<ul>[#tree RESULT#]</ul>[#endif RESULT#]
+ </li>
+ [#end RESULT#]
+</ul>
+[#else TREE#]
 <table   class="table table-stripped">
 <thead>
 <tr>
@@ -135,14 +152,12 @@
 </thead>
 <tbody>
 [#begin RESULT#]
-<tr class="hover_btn2">
- <td
-  >
+<tr>
+ <td>
   <b>
    [#TITLE#]
-  </a></b>
-  <br>
-  [#PATH#]
+  </b>[#if PATH!=""#]<br>[#PATH#][#endif#]
+  [#if LINKED_OBJECT!=""#]<br/><i>[#LINKED_OBJECT#].[#LINKED_PROPERTY#]</i>[#endif LINKED_OBJECT#]
  </td>
  <td
    >
@@ -154,11 +169,7 @@
  </td>
  <td
  >
-  [#if VALUE!=""#]
-   [#VALUE#]
-  [#else#]
-   &nbsp;
-  [#endif#]
+  <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
   [#if LINKED_OBJECT!=""#]([#LINKED_OBJECT#].[#LINKED_PROPERTY#])[#endif LINKED_OBJECT#]
  </td>
  <td width="1%" nowrap>
@@ -173,9 +184,7 @@
 [#end RESULT#]
 </tbody>
 </table>
-<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
-<input type="hidden" name="view_mode" value="multiple_mqtt">
-</form>
+[#endif TREE#]
 <!-- / search results (list) -->
 <!-- paging -->
 [#if PAGES#]
@@ -196,4 +205,33 @@
 </p>
 [#endif RESULT#]
 <!-- / results -->
+<script type="text/javascript">
+ var valuesUpdateTimeout=0;
+ function getLatestValues() {
+  clearTimeout(valuesUpdateTimeout);
+  var ids='';
+  $('.mqtt_value').each(function () {
+   ids+='ids[]='+this.id.replace('mqtt','')+'&';
+  });
+  var url='/ajax/mqtt.html?op=getvalues&'+ids;
+  $.ajax({
+   url: url
+  }).done(function(data) {
+   var obj=jQuery.parseJSON(data);
+   if (obj.DATA.length>0) {
+    for(var i=0;i<obj.DATA.length;i++) {
+     var item_id=obj.DATA[i].ID;
+     var value = obj.DATA[i].VALUE;
+     var oldValue=$('#mqtt'+item_id).html();
+     $('#mqtt'+item_id).html(value);
+     if (value!=oldValue) {
+      $("#mqtt"+item_id).fadeTo(100, 0.1).fadeTo(200, 1.0);
+     }
+    }
+   }
+   valuesUpdateTimeout = setTimeout('getLatestValues()',2000);
+  });
+ }
+ valuesUpdateTimeout = setTimeout('getLatestValues()',2000);
+</script>
 
