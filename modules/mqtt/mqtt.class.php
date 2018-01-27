@@ -259,6 +259,14 @@ function run() {
    if (preg_match('/\#$/', $path)) {
     return 0;
    }
+
+   if (preg_match('/^{/',$value)) {
+       $ar=json_decode($value,true);
+       foreach($ar as $k=>$v) {
+           $this->processMessage($path.'/'.$k,$v);
+       }
+   }
+
    /* Search 'PATH' in database (db) */
    $rec=SQLSelectOne("SELECT * FROM mqtt WHERE PATH LIKE '".DBSafe($path)."'");
    
