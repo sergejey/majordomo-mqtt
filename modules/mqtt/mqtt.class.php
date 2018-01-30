@@ -263,6 +263,8 @@ function run() {
    if (preg_match('/^{/',$value)) {
        $ar=json_decode($value,true);
        foreach($ar as $k=>$v) {
+           if (is_array($v))
+               $v = json_encode($v);
            $this->processMessage($path.'/'.$k,$v);
        }
    }
