@@ -126,6 +126,12 @@
  <button type="submit" name="subm" value="<#LANG_ADD#>" class="btn btn-defaul btn-primary"><#LANG_ADD#></button>
  [#endif ID#]
  <a href="?" class="btn btn-default"><#LANG_CANCEL#></a>
+
+ [#if ID!=""#]
+ &nbsp;&nbsp;&nbsp;
+ <a href="?view_mode=delete_mqtt&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i> <#LANG_DELETE#></a>
+ [#endif#]
+
 <input type="hidden" name="id" value="<#ID#>">
 <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
 <input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">

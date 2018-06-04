@@ -59,6 +59,15 @@
   } else {
    $session->data['MQTT_TREE_VIEW']=$tree;
   }
+
+  if (isset($_GET['tree'])) {
+   $tree=(int)$_GET['tree'];
+   $this->config['TREE_VIEW']=$tree;
+   $this->saveConfig();
+  } else {
+   $tree = $this->config['TREE_VIEW'];
+  }
+
   if ($tree) {
    $out['TREE']=1;
   }
@@ -77,6 +86,8 @@
     // some action for every record if required
     //$tmp=explode(' ', $res[$i]['UPDATED']);
     //$res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];
+    $res[$i]['VALUE']=str_replace('":','": ',$res[$i]['VALUE']);
+
     if ($res[$i]['TITLE']==$res[$i]['PATH'] && !$out['TREE']) $res[$i]['PATH']='';
    }
    $out['RESULT']=$res;

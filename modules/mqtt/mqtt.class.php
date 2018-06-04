@@ -412,6 +412,10 @@ function usual(&$out) {
                 $ids[]=0;
             }
             $data=SQLSelect("SELECT ID,VALUE FROM mqtt WHERE ID IN (".implode(',',$ids).")");
+            $total = count($data);
+            for($i=0;$i<$total;$i++) {
+                $data[$i]['VALUE']=str_replace('":','": ',$data[$i]['VALUE']);
+            }
             $result['DATA']=$data;
         }
         echo json_encode($result);
