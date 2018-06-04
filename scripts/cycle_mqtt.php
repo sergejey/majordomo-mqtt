@@ -83,9 +83,10 @@ for($i=0;$i<$total;$i++) {
  $topics[$path] = array("qos" => 0, "function" => "procmsg");
 }
 foreach($topics as $k=>$v) {
- echo date('H:i:s')." Subscribing to: $k\n";
+    echo date('H:i:s')." Subscribing to: $k  \n";
+    $rec=array($k=>$v);
+    $mqtt_client->subscribe($rec, 0);
 }
-$mqtt_client->subscribe($topics, 0);
 $previousMillis = 0;
 
 while ($mqtt_client->proc())
