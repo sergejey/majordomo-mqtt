@@ -185,6 +185,17 @@ function run() {
   }
 
 
+     if ($rec['REPLACE_LIST']!='') {
+         $list=explode(',',$rec['REPLACE_LIST']);
+         foreach($list as $pair) {
+             $pair=trim($pair);
+             list($new,$old)=explode('=',$pair);
+             if ($value==$old) {
+                 $value=$new;
+                 break;
+             }
+         }
+     }
   //if ($new_connection) {
 
   include_once("./lib/mqtt/phpMQTT.php");
@@ -219,7 +230,13 @@ function run() {
    }
 
    if ($rec['PATH_WRITE']) {
-    $mqtt_client->publish($rec['PATH_WRITE'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+       if (preg_match('/^http:/',$rec['PATH_WRITE'])) {
+           $url=$rec['PATH_WRITE'];
+           $url=str_replace('%VALUE%',$value,$url);
+           getURL($url,0);
+       } else {
+           $mqtt_client->publish($rec['PATH_WRITE'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+       }
    } else {
     $mqtt_client->publish($rec['PATH'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
    }
@@ -295,7 +312,21 @@ function run() {
      SQLUpdate('mqtt', $rec);
      /* Update property in linked object if it exist */
      if($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
-       setGlobal($rec['LINKED_OBJECT'].'.'.$rec['LINKED_PROPERTY'], $rec['VALUE'], array('mqtt'=>'0'));
+
+         $value=$rec['VALUE'];
+         if ($rec['REPLACE_LIST']!='') {
+             $list=explode(',',$rec['REPLACE_LIST']);
+             foreach($list as $pair) {
+                 $pair=trim($pair);
+                 list($new,$old)=explode('=',$pair);
+                 if ($value==$new) {
+                     $value=$old;
+                     break;
+                 }
+             }
+         }
+
+       setGlobal($rec['LINKED_OBJECT'].'.'.$rec['LINKED_PROPERTY'], $value, array('mqtt'=>'0'));
      }
    }
  }
@@ -503,6 +534,7 @@ mqtt - MQTT
  mqtt: VALUE varchar(255) NOT NULL DEFAULT ''
  mqtt: PATH varchar(255) NOT NULL DEFAULT ''
  mqtt: PATH_WRITE varchar(255) NOT NULL DEFAULT ''
+ mqtt: REPLACE_LIST varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_OBJECT varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT ''
  mqtt: QOS int(3) NOT NULL DEFAULT '0'

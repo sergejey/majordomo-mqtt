@@ -43,6 +43,7 @@
    global $retain;
    $rec['RETAIN']=(int)$retain;
 
+      $rec['REPLACE_LIST']=trim(gr('replace_list'));
 
    $old_linked_object=$rec['LINKED_OBJECT'];
    $old_linked_property=$rec['LINKED_PROPERTY'];
