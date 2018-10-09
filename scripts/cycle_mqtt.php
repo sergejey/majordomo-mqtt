@@ -28,6 +28,7 @@ if ($mqtt->config['MQTT_CLIENT']) {
 } else {
  $client_name="MajorDoMo MQTT Cycle";
 }
+$client_name = $client_name.' (#'.uniqid().')';
 
 if ($mqtt->config['MQTT_AUTH'])
 {
@@ -113,6 +114,7 @@ while ($mqtt_client->proc())
   
       if (file_exists('./reboot') || IsSet($_GET['onetime']))
       {
+         $mqtt_client->close();
          $db->Disconnect();
          exit;
       }
