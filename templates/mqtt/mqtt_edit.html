@@ -109,6 +109,13 @@
 </div>
 
 
+<!-- DEVICE -->
+<div class="form-group">
+ <label class="control-label">
+ <#LANG_DEVICE#>:
+ </label>
+ <div class="controls">[#module name="devices" action="link" type="unknow" prefix="mqtt" source_table="mqtt" source_table_id="<#ID#>" linked_object="<#LINKED_OBJECT#>"#]</div>
+</div>
 <!-- LINKED_OBJECT (varchar) -->
 <div class="form-group">
  <label class="control-label"[#if ERR_LINKED_OBJECT#] style="color:red;font-weight:bold"[#endif#]>
@@ -123,7 +130,14 @@
  </label>
  <div class="controls"><input type="text" name="linked_property" id="linked_property" value="[#LINKED_PROPERTY#]" class="input form-control"></div>
 </div>
-
+<!-- LINKED_METHOD (varchar) -->
+<div class="form-group">
+ <label class="control-label"[#if ERR_LINKED_METHOD#] style="color:red;font-weight:bold"[#endif#]>
+ <#LANG_METHOD#>:
+ </label>
+ <div class="controls"><input type="text" name="linked_property" id="linked_method" value="[#LINKED_METHOD#]" class="input form-control"></div>
+</div>
+[#module name="linkedobject" object_field="linked_object" property_field="linked_property" method_field="linked_method" width="200"#]
  <div class="form-group">
   <label class="control-label">
    Replace list:
@@ -152,4 +166,4 @@
 </div>
 </fieldset>
 </form>
-[#module name="linkedobject" object_field="linked_object" property_field="linked_property"#]
+

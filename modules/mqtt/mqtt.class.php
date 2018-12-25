@@ -328,6 +328,10 @@ function run() {
 
        setGlobal($rec['LINKED_OBJECT'].'.'.$rec['LINKED_PROPERTY'], $value, array('mqtt'=>'0'));
      }
+     if ($rec['LINKED_OBJECT'] && $cmd_rec['LINKED_METHOD']) {
+       callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], $rec['VALUE']);
+     }
+
    }
  }
 
@@ -537,6 +541,7 @@ mqtt - MQTT
  mqtt: REPLACE_LIST varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_OBJECT varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT ''
+ mqtt: LINKED_METHOD varchar(255) NOT NULL DEFAULT ''
  mqtt: QOS int(3) NOT NULL DEFAULT '0'
  mqtt: RETAIN int(3) NOT NULL DEFAULT '0'
  mqtt: DISP_FLAG int(3) NOT NULL DEFAULT '0'

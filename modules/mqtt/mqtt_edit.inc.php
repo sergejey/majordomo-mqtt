@@ -47,6 +47,7 @@
 
    $old_linked_object=$rec['LINKED_OBJECT'];
    $old_linked_property=$rec['LINKED_PROPERTY'];
+   $old_linked_method=$rec['LINKED_METHOD'];
 
 
   //updating 'LINKED_OBJECT' (varchar)
@@ -55,6 +56,9 @@
   //updating 'LINKED_PROPERTY' (varchar)
    global $linked_property;
    $rec['LINKED_PROPERTY']=$linked_property;
+  //updating 'LINKED_METHOD' (varchar)
+   global $linked_method;
+   $rec['LINKED_METHOD']=$linked_method;
 
 
   //UPDATING RECORD
