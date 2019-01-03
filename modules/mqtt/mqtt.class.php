@@ -441,6 +441,11 @@ function usual(&$out) {
     if ($this->ajax) {
         global $op;
         $result=array();
+        if ($op=='process') {
+            $topic=gr('topic');
+            $msg=gr('msg');
+            $this->processMessage($topic, $msg);
+        }
         if ($op=='getvalues') {
             global $ids;
             if (!is_array($ids)) {
