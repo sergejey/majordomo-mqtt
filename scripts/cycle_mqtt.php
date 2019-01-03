@@ -117,10 +117,10 @@ $mqtt_client->close();
  * @return void
  */
 function procmsg($topic, $msg) {
-    $url = BASE_URL . '/ajax/mqtt.html?op=process&topic='.urlencode($topic)."&msg=".urlencode($msg);
-    getURLBackground($url);
-    //global $mqtt;
-    //$mqtt->processMessage($topic, $msg);
+    //$url = BASE_URL . '/ajax/mqtt.html?op=process&topic='.urlencode($topic)."&msg=".urlencode($msg);
+    //getURLBackground($url);
+    global $mqtt;
+    $mqtt->processMessage($topic, $msg);
     //echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
 }
 
