@@ -15,7 +15,7 @@ include_once(DIR_MODULES . "control_modules/control_modules.class.php");
 
 set_time_limit(0);
 
-require("./lib/mqtt/phpMQTT.php");
+include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
 include_once(DIR_MODULES . "mqtt/mqtt.class.php");
 
 $mqtt = new mqtt();
@@ -53,7 +53,7 @@ if ($mqtt->config['MQTT_QUERY']) {
     $query = '/var/now/#';
 }
 
-$mqtt_client = new phpMQTT($host, $port, $client_name);
+$mqtt_client = new Bluerhinos\phpMQTT($host, $port, $client_name);
 
 if ($mqtt->config['MQTT_AUTH']) {
     if (!$mqtt_client->connect(true, NULL, $username, $password)) {

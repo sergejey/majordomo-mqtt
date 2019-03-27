@@ -170,6 +170,45 @@ function run() {
         return $res;
     }
 
+
+    function mqttPublish($topic,$value,$qos=0,$retain=0) {
+        //include_once("./lib/mqtt/phpMQTT.php");
+        include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
+
+        $this->getConfig();
+        if ($mqtt->config['MQTT_CLIENT']) {
+            $client_name=$mqtt->config['MQTT_CLIENT'];
+        } else {
+            $client_name="MajorDoMo MQTT";
+        }
+
+        if ($this->config['MQTT_AUTH']) {
+            $username=$this->config['MQTT_USERNAME'];
+            $password=$this->config['MQTT_PASSWORD'];
+        }
+        if ($this->config['MQTT_HOST']) {
+            $host=$this->config['MQTT_HOST'];
+        } else {
+            $host='localhost';
+        }
+        if ($this->config['MQTT_PORT']) {
+            $port=$this->config['MQTT_PORT'];
+        } else {
+            $port=1883;
+        }
+
+        $mqtt_client = new Bluerhinos\phpMQTT($host, $port, $client_name.' Client');
+
+        if(!$mqtt_client->connect(true, NULL,$username,$password))
+        {
+            return 0;
+        }
+
+        $mqtt_client->publish($topic,$value, $qos, $retain);
+
+        $mqtt_client->close();
+    }
+
 /**
 * Title
 *
@@ -196,38 +235,6 @@ function run() {
              }
          }
      }
-  //if ($new_connection) {
-
-  include_once("./lib/mqtt/phpMQTT.php");
-
-   $this->getConfig();
-   if ($mqtt->config['MQTT_CLIENT']) {
-    $client_name=$mqtt->config['MQTT_CLIENT'];
-   } else {
-    $client_name="MajorDoMo MQTT";
-   }
-
-   if ($this->config['MQTT_AUTH']) {
-    $username=$this->config['MQTT_USERNAME'];
-    $password=$this->config['MQTT_PASSWORD'];
-   }
-   if ($this->config['MQTT_HOST']) {
-    $host=$this->config['MQTT_HOST'];
-   } else {
-    $host='localhost';
-   }
-   if ($this->config['MQTT_PORT']) {
-    $port=$this->config['MQTT_PORT'];
-   } else {
-    $port=1883;
-   }
-
-   $mqtt_client = new phpMQTT($host, $port, $client_name.' Client');
-
-   if(!$mqtt_client->connect(true, NULL,$username,$password))
-   {
-    return 0;
-   }
 
    if ($rec['PATH_WRITE']) {
        if (preg_match('/^http:/',$rec['PATH_WRITE'])) {
@@ -235,24 +242,12 @@ function run() {
            $url=str_replace('%VALUE%',$value,$url);
            getURL($url,0);
        } else {
-           $mqtt_client->publish($rec['PATH_WRITE'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+           $this->mqttPublish($rec['PATH_WRITE'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
        }
    } else {
-    $mqtt_client->publish($rec['PATH'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+       $this->mqttPublish($rec['PATH'],$value, (int)$rec['QOS'], (int)$rec['RETAIN']);
    }
-   $mqtt_client->close();
-
-  /*
-  } else {
-
-   $this->prepareQueueTable();
-   $data=array();
-   $data['PATH']=$rec['PATH'];
-   $data['VALUE']=$value;
-   SQLInsert('mqtt_queue', $data);
-
-  }
-  */
+   //$mqtt_client->close();
 
   $rec['VALUE']=$value.'';
   $rec['UPDATED']=date('Y-m-d H:i:s');
@@ -428,6 +423,14 @@ function clear_trash() {
     for ($i=0;$i<$total;$i++) {
         $this->delete_mqtt($res[$i]['ID']);
     }
+    $res=SQLSelect("SELECT ID, LINKED_OBJECT FROM mqtt WHERE LINKED_OBJECT!=''");
+    $total = count($res);
+    for ($i=0;$i<$total;$i++) {
+        $obj=getObject($res[$i]['LINKED_OBJECT']);
+        if (!is_object($obj)) {
+            $this->delete_mqtt($res[$i]['ID']);
+        }
+    }
 }
 
 /**
@@ -459,6 +462,11 @@ function usual(&$out) {
                 $data[$i]['VALUE']=str_replace('":','": ',$data[$i]['VALUE']);
             }
             $result['DATA']=$data;
+        }
+        if ($op=='send') {
+            $topic=gr('topic');
+            $value=gr('value');
+
         }
         echo json_encode($result);
         exit;
