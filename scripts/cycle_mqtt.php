@@ -16,7 +16,7 @@ include_once(DIR_MODULES . "control_modules/control_modules.class.php");
 set_time_limit(0);
 
 include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
-include_once(DIR_MODULES . "mqtt/mqtt.class.php");
+//include_once(DIR_MODULES . "mqtt/mqtt.class.php");
 
 $mqtt = new mqtt();
 
