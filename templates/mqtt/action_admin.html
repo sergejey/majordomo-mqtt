@@ -1,5 +1,35 @@
+<script type="text/javascript">
+    var valuesUpdateTimeout=0;
+    function getLatestValues() {
+        clearTimeout(valuesUpdateTimeout);
+        var ids='';
+        $('.mqtt_value').each(function () {
+            ids+='ids[]='+this.id.replace('mqtt','')+'&';
+        });
+        var url='/ajax/mqtt.html?op=getvalues&'+ids;
+        $.ajax({
+            url: url
+        }).done(function(data) {
+            var obj=jQuery.parseJSON(data);
+            if (obj.DATA.length>0) {
+                for(var i=0;i<obj.DATA.length;i++) {
+                    var item_id=obj.DATA[i].ID;
+                    var value = obj.DATA[i].VALUE;
+                    var oldValue=$('#mqtt'+item_id).html();
+                    $('#mqtt'+item_id).html(value);
+                    if (value!=oldValue) {
+                        $("#mqtt"+item_id).fadeTo(100, 0.1).fadeTo(200, 1.0);
+                    }
+                }
+            }
+            valuesUpdateTimeout = setTimeout('getLatestValues()',2000);
+        });
+    }
+    valuesUpdateTimeout = setTimeout('getLatestValues()',2000);
+</script>
 
- <!-- action usual -->
+
+<!-- action usual -->
  <!-- table mqtt search -->
  [#if VIEW_MODE="search_mqtt" || VIEW_MODE=""#]
   [#inc mqtt_search_admin.html#]

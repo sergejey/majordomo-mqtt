@@ -1,8 +1,14 @@
 
 <!-- Table 'mqtt' edit -->
-<p align=center>
+<div>
  <a href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
-</p>
+[#begin PARENTS#]
+ /
+ [#if ID!=""#]<a href="?view_mode=edit_mqtt&id=[#ID#]">[#TITLE#]</a>[#else ID#][#TITLE#][#endif ID#]
+
+[#end PARENTS#]
+</div>
+&nbsp;
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
 [#if OK#]
 <div class="alert alert-success"><#LANG_DATA_SAVED#></div>
@@ -64,6 +70,16 @@
  </div>
 </div>
 
+ <div class="form-group">
+  <label class="control-label">
+   <#LANG_READ_ONLY#>:
+  </label>
+  <div class="controls">
+    <input type="radio" name="readonly" value="1"[#if READONLY="1"#] checked[#endif#]> <#LANG_YES#>
+   <input type="radio" name="readonly" value="0"[#if READONLY!="1"#] checked[#endif#]> <#LANG_NO#>
+  </div>
+ </div>
+
 <div class="form-group">
  <label class="control-label">
  QoS:
@@ -82,8 +98,8 @@
  (<#LANG_OPTIONAL#>)
  </label>
  <div class="controls">
- <input type="radio" name="retain" value="0"[#if RETAIN!="1"#] checked[#endif#]> <#LANG_NO#>
  <input type="radio" name="retain" value="1"[#if RETAIN="1"#] checked[#endif#]> <#LANG_YES#>
+ <input type="radio" name="retain" value="0"[#if RETAIN!="1"#] checked[#endif#]> <#LANG_NO#>
  </div>
 </div>
 
@@ -92,7 +108,7 @@
  <#LANG_VALUE#>:
  </label>
  <div class="controls">
- [#VALUE#]
+ <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span> (<#LANG_UPDATED#>: [#UPDATED#])
  </div>
 </div>
 
@@ -167,3 +183,14 @@
 </fieldset>
 </form>
 
+[#if CHILDS#]
+&nbsp;
+<table class="table">
+ [#begin CHILDS#]
+ <tr>
+  <td><a href="?view_mode=edit_mqtt&id=[#ID#]">[#PATH#]</a></td>
+  <td><span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span></td>
+ </tr>
+ [#end CHILDS#]
+</table>
+[#endif CHILDS#]

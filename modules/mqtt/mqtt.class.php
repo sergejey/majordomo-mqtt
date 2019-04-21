@@ -313,11 +313,11 @@ class mqtt extends module
                 }
             }
             /* Insert new record in db */
+            $rec = array();
             $rec['PATH'] = $path;
             $rec['TITLE'] = $path;
             $rec['VALUE'] = $value . '';
             $rec['UPDATED'] = date('Y-m-d H:i:s');
-            $rec['ID'] = null;
             SQLInsert('mqtt', $rec);
         } else {
             /* Update values in db */
@@ -518,7 +518,7 @@ class mqtt extends module
 
     function propertySetHandle($object, $property, $value)
     {
-        $mqtt_properties = SQLSelect("SELECT ID FROM mqtt WHERE LINKED_OBJECT LIKE '" . DBSafe($object) . "' AND LINKED_PROPERTY LIKE '" . DBSafe($property) . "'");
+        $mqtt_properties = SQLSelect("SELECT ID FROM mqtt WHERE READONLY=0 AND LINKED_OBJECT LIKE '" . DBSafe($object) . "' AND LINKED_PROPERTY LIKE '" . DBSafe($property) . "'");
         $total = count($mqtt_properties);
         if ($total) {
             for ($i = 0; $i < $total; $i++) {
@@ -592,6 +592,7 @@ class mqtt extends module
  mqtt: QOS int(3) NOT NULL DEFAULT '0'
  mqtt: RETAIN int(3) NOT NULL DEFAULT '0'
  mqtt: DISP_FLAG int(3) NOT NULL DEFAULT '0'
+ mqtt: READONLY int(3) NOT NULL DEFAULT '0'
 EOD;
         parent::dbInstall($data);
     }
