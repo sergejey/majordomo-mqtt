@@ -119,9 +119,15 @@ $mqtt_client->close();
 function procmsg($topic, $msg) {
     //$url = BASE_URL . '/ajax/mqtt.html?op=process&topic='.urlencode($topic)."&msg=".urlencode($msg);
     //getURLBackground($url);
-    global $mqtt;
-    $mqtt->processMessage($topic, $msg);
-    //echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
+    if (!isset($topic) || !isset($msg)) return false;
+
+    echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
+    if (function_exists('callAPI')) {
+        callAPI('/api/module/mqtt','GET',array('topic'=>$topic,'msg'=>$msg));
+    } else {
+        global $mqtt;
+        $mqtt->processMessage($topic, $msg);
+    }
 }
 
 $db->Disconnect(); // closing database connection

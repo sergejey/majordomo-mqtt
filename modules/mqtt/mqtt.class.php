@@ -20,7 +20,7 @@ class mqtt extends module
      *
      * @access private
      */
-    function mqtt()
+    function __construct()
     {
         $this->name = "mqtt";
         $this->title = "<#LANG_MODULE_MQTT#>";
@@ -301,11 +301,11 @@ class mqtt extends module
         }
 
         /* Search 'PATH' in database (db) */
-        $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH LIKE '" . DBSafe($path) . "'");
+        $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH = '" . DBSafe($path) . "'");
 
         if (!$rec['ID']) { /* If 'PATH' not found in db */
             /* New query to search 'PATH_WRITE' record in db */
-            $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH_WRITE LIKE '" . DBSafe($path) . "'");
+            $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
 
             if ($rec['ID']) { /* If path_write foud in db */
                 if ($rec['DISP_FLAG'] != "0") { /* check disp_flag */
@@ -451,6 +451,12 @@ class mqtt extends module
             if (!is_object($obj)) {
                 $this->delete_mqtt($res[$i]['ID']);
             }
+        }
+    }
+
+    function api($params) {
+        if ($_REQUEST['topic'] && $_REQUEST['msg']) {
+            $this->processMessage($_REQUEST['topic'], $_REQUEST['msg']);
         }
     }
 
