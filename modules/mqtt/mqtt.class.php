@@ -455,7 +455,7 @@ class mqtt extends module
     }
 
     function api($params) {
-        if ($_REQUEST['topic'] && $_REQUEST['msg']) {
+        if ($_REQUEST['topic']) {
             $this->processMessage($_REQUEST['topic'], $_REQUEST['msg']);
         }
     }
