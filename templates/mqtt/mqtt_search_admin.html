@@ -126,17 +126,92 @@
 <!-- / paging -->
 <!-- search results (list) -->
 [#if TREE="1"#]
-<ul>
+<style type="text/css">
+ul.LinkedList { display: block; }
+ul.LinkedList ul { display: none; } 
+.HandCursorStyle { cursor: pointer; cursor: hand; }  /* For IE */
+</style>
+
+<script type="text/JavaScript">
+    // Add this to the onload event of the BODY element
+    function addEvents() {
+      activateTree(document.getElementById("LinkedList1"));
+    }
+
+    // This function traverses the list and add links 
+    // to nested list items
+    function activateTree(oList) {
+      // Collapse the tree
+      for (var i=0; i < oList.getElementsByTagName("ul").length; i++) {
+        oList.getElementsByTagName("ul")[i].style.display="none";            
+      }                                                                  
+      // Add the click-event handler to the list items
+      if (oList.addEventListener) {
+        oList.addEventListener("click", toggleBranch, false);
+      } else if (oList.attachEvent) { // For IE
+        oList.attachEvent("onclick", toggleBranch);
+      }
+      // Make the nested items look like links
+      addLinksToBranches(oList);
+    }
+
+    // This is the click-event handler
+    function toggleBranch(event) {
+      var oBranch, cSubBranches;
+      if (event.target) {
+        oBranch = event.target;
+      } else if (event.srcElement) { // For IE
+        oBranch = event.srcElement;
+      }
+      cSubBranches = oBranch.getElementsByTagName("ul");
+      if (cSubBranches.length > 0) {
+        if (cSubBranches[0].style.display == "block") {
+          cSubBranches[0].style.display = "none";
+        } else {
+          cSubBranches[0].style.display = "block";
+        }
+      }
+    }
+
+    // This function makes nested list items look like links
+    function addLinksToBranches(oList) {
+      var cBranches = oList.getElementsByTagName("li");
+      var i, n, cSubBranches;
+      if (cBranches.length > 0) {
+        for (i=0, n = cBranches.length; i < n; i++) {
+          cSubBranches = cBranches[i].getElementsByTagName("ul");
+          if (cSubBranches.length > 0) {
+            addLinksToBranches(cSubBranches[0]);
+            cBranches[i].className = "HandCursorStyle";
+            cBranches[i].style.fontWeight="bold";
+            cSubBranches[0].style.color = "black";
+            cSubBranches[0].style.fontWeight = "normal";
+            cSubBranches[0].style.cursor = "auto";
+          }
+        }
+      }
+    }
+  </script>
+<ul id="LinkedList1" class="LinkedList">
  [#begin RESULT#]
- <li style="list-style-type: none">
-  [#if ID!=""#]
-  [#if TITLE!=""#]<b>&bull;</b>&nbsp;[#endif#]<a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]">[#if TITLE=""#]<b>&bull;</b>&nbsp;[#else#][#TITLE#][#endif#]</a> <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
-  [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
-  [#else#]<b>&bull;&nbsp;[#TITLE#]</b>[#endif#]
+ <li  style="list-style-type: none">
+   [#if ID!=""#]
+    [#if TITLE!=""#]<b>&bull;</b>&nbsp;[#endif#]
+    <a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]">
+        [#if TITLE=""#]<b>&bull;</b>&nbsp;[#else#][#TITLE#][#endif#]
+    </a> 
+    <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
+    [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
+  [#else#]
+    <b>&bull;</b>&nbsp;[#TITLE#]
+  [#endif#]
   [#if RESULT#]<ul>[#tree RESULT#]</ul>[#endif RESULT#]
  </li>
  [#end RESULT#]
 </ul>
+<script type="text/JavaScript">
+    addEvents();
+</script>
 [#else TREE#]
 <table   class="table table-stripped">
 <thead>
