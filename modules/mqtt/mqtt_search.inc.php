@@ -11,7 +11,11 @@
   //searching 'TITLE' (varchar)
   global $title;
   if ($title!='') {
-   $qry.=" AND (TITLE LIKE '%".DBSafe($title)."%' OR VALUE LIKE '%".DBSafe($title)."%' OR PATH LIKE '%".DBSafe($title)."%')";
+   $qry.=" AND (TITLE LIKE '%".DBSafe($title)."%' OR VALUE LIKE '%".DBSafe($title)."%' OR PATH LIKE '%".DBSafe($title)."%'";
+   $qry.=" OR LINKED_OBJECT LIKE '".DBSafe($title)."'";
+   $qry.=" OR LINKED_PROPERTY LIKE '".DBSafe($title)."'";
+   $qry.=" OR LINKED_METHOD LIKE '".DBSafe($title)."'";
+   $qry.=")";
    $out['TITLE']=$title;
   }
 
