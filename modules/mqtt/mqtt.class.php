@@ -341,7 +341,8 @@ class mqtt extends module
                 }
                 setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array('mqtt' => '0'));
             }
-            if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD']) {
+            if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
+                !(strtolower($rec['LINKED_PROPERTY'])=='status' && strtolower($rec['LINKED_METHOD']=='switch'))) {
                 callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE'=>$rec['VALUE']));
             }
 
