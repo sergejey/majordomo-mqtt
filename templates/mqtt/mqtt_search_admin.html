@@ -78,6 +78,18 @@
   <div class="col-md-3">
 <input type="text" name="title" value="<#TITLE#>" class="form-control" placeholder="<#LANG_SEARCH#>">
   </div>
+
+  <div class="col-md-3">
+  <select class="form-control" name="searchpath">
+   <option value="0"><#LANG_FILTER_BY_CLASS#> (<#LANG_ALL#>)
+
+   [#begin PATHS#]
+   <option value="[#path#]"[#if path="<#SEARCH#>"#] selected[#endif#]>[#path#]
+   [#end PATHS#]
+  </select>
+  </div>
+
+
   <div class="col-md-3">
   <select class="form-control" name="location_id">
    <option value="0"><#LANG_FILTER_BY_LOCATION#> (<#LANG_ALL#>)
