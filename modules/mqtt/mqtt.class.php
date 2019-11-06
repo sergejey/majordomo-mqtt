@@ -302,6 +302,7 @@ class mqtt extends module
 
         /* Search 'PATH' in database (db) */
         $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH = '" . DBSafe($path) . "'");
+        $old_value = $rec['VALUE'];
 
         if (!$rec['ID']) { /* If 'PATH' not found in db */
             /* New query to search 'PATH_WRITE' record in db */
@@ -343,7 +344,7 @@ class mqtt extends module
             }
             if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
                 !(strtolower($rec['LINKED_PROPERTY'])=='status' && strtolower($rec['LINKED_METHOD'])=='switch')) {
-                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE'=>$rec['VALUE']));
+                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE'=>$rec['VALUE'],'OLD_VALUE'=>$old_value));
             }
 
         }
