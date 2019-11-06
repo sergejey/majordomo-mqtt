@@ -19,6 +19,17 @@
    $out['TITLE']=$title;
   }
 
+
+  global $searchpath;
+  if ($searchpath!='') {
+   $qry.=" AND (TITLE LIKE '%".DBSafe($searchpath)."%' OR VALUE LIKE '%".DBSafe($searchpath)."%' OR PATH LIKE '%".DBSafe($searchpath)."%'";
+   $qry.=" OR LINKED_OBJECT LIKE '".DBSafe($searchpath)."'";
+   $qry.=" OR LINKED_PROPERTY LIKE '".DBSafe($searchpath)."'";
+   $qry.=" OR LINKED_METHOD LIKE '".DBSafe($searchpath)."'";
+   $qry.=")";
+   $out['SEARCH']=$searchpath;
+  }
+
   global $location_id;
   if ($location_id) {
    $qry.=" AND LOCATION_ID='".(int)$location_id."'";
@@ -104,5 +115,8 @@
 
 
   $out['LOCATIONS']=SQLSelect("SELECT * FROM locations ORDER BY TITLE");
+
+  $out['PATHS']=SQLSelect("SELECT distinct SUBSTRING_INDEX(CASE SUBSTRING(path,1,1) WHEN '/' THEN SUBSTRING(path,2) else  path end, '/', 1) path FROM mqtt");
+
 
 ?>
