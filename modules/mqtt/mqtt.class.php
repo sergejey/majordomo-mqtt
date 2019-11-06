@@ -187,8 +187,8 @@ class mqtt extends module
         include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
 
         $this->getConfig();
-        if ($mqtt->config['MQTT_CLIENT']) {
-            $client_name = $mqtt->config['MQTT_CLIENT'];
+        if ($this->config['MQTT_CLIENT']) {//
+            $client_name = $this->config['MQTT_CLIENT'];
         } else {
             $client_name = "MajorDoMo MQTT";
         }
