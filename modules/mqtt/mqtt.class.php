@@ -459,6 +459,9 @@ class mqtt extends module
         if ($_REQUEST['topic']) {
             $this->processMessage($_REQUEST['topic'], $_REQUEST['msg']);
         }
+        if ($params['publish']) {
+            $this->mqttPublish($params['publish'],$params['msg']);
+        }
     }
 
     /**
