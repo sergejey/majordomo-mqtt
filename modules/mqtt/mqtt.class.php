@@ -320,7 +320,7 @@ class mqtt extends module
             $rec['VALUE'] = $value . '';
             $rec['UPDATED'] = date('Y-m-d H:i:s');
             SQLInsert('mqtt', $rec);
-        } else {
+        } elseif($value != $old_value) {
             /* Update values in db */
             $rec['VALUE'] = $value . '';
             $rec['UPDATED'] = date('Y-m-d H:i:s');
