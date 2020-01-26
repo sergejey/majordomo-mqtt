@@ -6,7 +6,7 @@
         $('.mqtt_value').each(function () {
             ids+='ids[]='+this.id.replace('mqtt','')+'&';
         });
-        var url='/ajax/mqtt.html?op=getvalues&'+ids;
+        var url='<#ROOTHTML#>ajax/mqtt.html?op=getvalues&'+ids;
         $.ajax({
             url: url
         }).done(function(data) {
