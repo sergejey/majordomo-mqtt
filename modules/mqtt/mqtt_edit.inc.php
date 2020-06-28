@@ -52,13 +52,16 @@ if ($this->mode == 'update') {
 
     //updating 'LINKED_OBJECT' (varchar)
     global $linked_object;
-    $rec['LINKED_OBJECT'] = $linked_object;
+    if (is_null ($linked_object)) { $rec['LINKED_OBJECT'] = ''; }
+    else { $rec['LINKED_OBJECT'] = $linked_object; }
     //updating 'LINKED_PROPERTY' (varchar)
     global $linked_property;
-    $rec['LINKED_PROPERTY'] = $linked_property;
+    if (is_null ($linked_property)) { $rec['LINKED_PROPERTY'] = ''; }
+    else { $rec['LINKED_PROPERTY'] = $linked_property; }
     //updating 'LINKED_METHOD' (varchar)
     global $linked_method;
-    $rec['LINKED_METHOD'] = $linked_method;
+    if (is_null ($linked_method)) { $rec['LINKED_METHOD'] = ''; }
+    else { $rec['LINKED_METHOD'] = $linked_method; }
 
     $rec['READONLY']=gr('readonly','int');
 
