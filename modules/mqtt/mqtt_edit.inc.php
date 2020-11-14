@@ -10,12 +10,14 @@ $rec = SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
 if ($this->mode == 'update') {
     $ok = 1;
     //updating 'TITLE' (varchar, required)
+    /*
     global $title;
     $rec['TITLE'] = $title;
     if ($rec['TITLE'] == '') {
         $out['ERR_TITLE'] = 1;
         $ok = 0;
     }
+    */
     //updating 'LOCATION_ID' (select)
     if (IsSet($this->location_id)) {
         $rec['LOCATION_ID'] = $this->location_id;
@@ -30,6 +32,7 @@ if ($this->mode == 'update') {
         $out['ERR_PATH'] = 1;
         $ok = 0;
     }
+    $rec['TITLE']=$rec['PATH'];
 
     global $path_write;
     $rec['PATH_WRITE'] = trim($path_write);

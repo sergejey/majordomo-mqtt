@@ -139,8 +139,6 @@
 <!-- search results (list) -->
 [#if TREE="1"#]
 <style type="text/css">
-ul.LinkedList { display: block; }
-ul.LinkedList ul { display: none; } 
 .HandCursorStyle { cursor: pointer; cursor: hand; }  /* For IE */
 </style>
 
@@ -154,9 +152,11 @@ ul.LinkedList ul { display: none; }
     // to nested list items
     function activateTree(oList) {
       // Collapse the tree
+        /*
       for (var i=0; i < oList.getElementsByTagName("ul").length; i++) {
         oList.getElementsByTagName("ul")[i].style.display="none";            
-      }                                                                  
+      }
+                                                                     */
       // Add the click-event handler to the list items
       if (oList.addEventListener) {
         oList.addEventListener("click", toggleBranch, false);
@@ -165,6 +165,15 @@ ul.LinkedList ul { display: none; }
       }
       // Make the nested items look like links
       addLinksToBranches(oList);
+    }
+
+    function rememberBranchStatus(title, status) {
+        var url="?ajax=1&op=branch_status&status="+status+"&branch="+encodeURIComponent(title);
+        $.ajax({
+            url: url
+        }).done(function(data) {
+            //alert(data);
+        });
     }
 
     // This is the click-event handler
@@ -177,10 +186,12 @@ ul.LinkedList ul { display: none; }
       }
       cSubBranches = oBranch.getElementsByTagName("ul");
       if (cSubBranches.length > 0) {
-        if (cSubBranches[0].style.display == "block") {
+        if (cSubBranches[0].style.display != "none") {
           cSubBranches[0].style.display = "none";
+          rememberBranchStatus(oBranch.title,0);
         } else {
           cSubBranches[0].style.display = "block";
+          rememberBranchStatus(oBranch.title,1);
         }
       }
     }
@@ -195,7 +206,7 @@ ul.LinkedList ul { display: none; }
           if (cSubBranches.length > 0) {
             addLinksToBranches(cSubBranches[0]);
             cBranches[i].className = "HandCursorStyle";
-            cBranches[i].style.fontWeight="bold";
+            //cBranches[i].style.fontWeight="bold";
             cSubBranches[0].style.color = "black";
             cSubBranches[0].style.fontWeight = "normal";
             cSubBranches[0].style.cursor = "auto";
@@ -206,18 +217,19 @@ ul.LinkedList ul { display: none; }
   </script>
 <ul id="LinkedList1" class="LinkedList">
  [#begin RESULT#]
- <li  style="list-style-type: none">
+ <li style="list-style-type: none" title="[#TITLE#]">
    [#if ID!=""#]
-    [#if TITLE!=""#]<b>&bull;</b>&nbsp;[#endif#]
+    [#if TITLE!=""#]&bull;&nbsp;[#endif#]
     <a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]">
-        [#if TITLE=""#]<b>&bull;</b>&nbsp;[#else#][#TITLE#][#endif#]
-    </a> 
+        [#if TITLE=""#]&bull;&nbsp;[#else#][#TITLE#][#endif#]
+    </a>
     <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
     [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
   [#else#]
-    <b>&bull;</b>&nbsp;[#TITLE#]
+    &bull;&nbsp;[#TITLE#]
   [#endif#]
-  [#if RESULT#]<ul>[#tree RESULT#]</ul>[#endif RESULT#]
+     [<a href="?view_mode=delete_path&path=[#PATH_URL#]" onclick="return confirm('<#LANG_ARE_YOU_SURE#>');">x</a>]
+  [#if RESULT#]<ul [#if IS_VISIBLE!="1"#] style="display:none"[#endif#]>[#tree RESULT#]</ul>[#endif RESULT#]
  </li>
  [#end RESULT#]
 </ul>

@@ -102,13 +102,13 @@
     //$tmp=explode(' ', $res[$i]['UPDATED']);
     //$res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];
     $res[$i]['VALUE']=str_replace('":','": ',$res[$i]['VALUE']);
-
     if ($res[$i]['TITLE']==$res[$i]['PATH'] && !$out['TREE']) $res[$i]['PATH']='';
    }
    $out['RESULT']=$res;
 
    if ($out['TREE']) {
     $out['RESULT']=$this->pathToTree($res);
+    //dprint($out['RESULT']);
    }
 
   }
