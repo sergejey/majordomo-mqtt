@@ -217,10 +217,10 @@
   </script>
 <ul id="LinkedList1" class="LinkedList">
  [#begin RESULT#]
- <li style="list-style-type: none" title="[#TITLE#]">
+ <li style="list-style-type: none; color:[#COLOR#]" title="[#TITLE#]">
    [#if ID!=""#]
     [#if TITLE!=""#]&bull;&nbsp;[#endif#]
-    <a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]">
+    <a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]" style="color:[#COLOR#]">
         [#if TITLE=""#]&bull;&nbsp;[#else#][#TITLE#][#endif#]
     </a>
     <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>

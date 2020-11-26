@@ -174,10 +174,37 @@ class mqtt extends module
             }
             if (isset($v['CHILDS'])) {
                 $items = $this->childsToArray($v['CHILDS'], $prev_path != '' ? $prev_path . '/' . $pp : $pp);
-                if (count($items) == 1) {
+                $total = count($items);
+                if ($total == 1) {
                     $v = $items[0];
                     $v['TITLE'] = $pp . ($v['TITLE'] != '' ? '/' . $v['TITLE'] : '');
                 } else {
+                    $max_updated=0;
+                    for($i=0;$i<$total;$i++) {
+                        if ($items[$i]['UPDATED']) {
+                            $tm = strtotime($items[$i]['UPDATED']);
+                            if (!isset($items[$i]['COLOR'])) {
+                                if ((time()-$tm)<=60*60) {
+                                    $items[$i]['COLOR']='green';
+                                } elseif ((time()-$tm)<=24*60*60) {
+                                    $items[$i]['COLOR']='black';
+                                } else {
+                                    $items[$i]['COLOR']='#aaaaaa';
+                                }
+                            }
+                            if ($tm>$max_updated) {
+                                $max_updated=$tm;
+                            }
+                        }
+                    }
+                    $v['UPDATED']=date('Y-m-d H:i:s',$max_updated);
+                    if ((time()-$max_updated)<=60*60) {
+                        $v['COLOR']='green';
+                    } elseif ((time()-$max_updated)<=24*60*60) {
+                        $v['COLOR']='black';
+                    } else {
+                        $v['COLOR']='#aaaaaa';
+                    }
                     $v['RESULT'] = $items;
                 }
                 //$v['RESULT'] = $items;
