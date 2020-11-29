@@ -218,16 +218,18 @@
 <ul id="LinkedList1" class="LinkedList">
  [#begin RESULT#]
  <li style="list-style-type: none; color:[#COLOR#]" title="[#TITLE#]">
+     [#if RESULT#]<i class="glyphicon glyphicon-folder-close"></i>[#else#]&bull;&nbsp;[#endif RESULT#]
    [#if ID!=""#]
-    [#if TITLE!=""#]&bull;&nbsp;[#endif#]
+
     <a href="?view_mode=edit_mqtt&id=[#ID#]" title="[#PATH#]" style="color:[#COLOR#]">
-        [#if TITLE=""#]&bull;&nbsp;[#else#][#TITLE#][#endif#]
+        [#if TITLE!=""#][#TITLE#][#else TITLE#][..][#endif TITLE#]
     </a>
-    <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
+    : <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
     [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
   [#else#]
-    &bull;&nbsp;[#TITLE#]
+    &nbsp;[#TITLE#]
   [#endif#]
+
      [<a href="?view_mode=delete_path&path=[#PATH_URL#]" onclick="return confirm('<#LANG_ARE_YOU_SURE#>');">x</a>]
   [#if RESULT#]<ul [#if IS_VISIBLE!="1"#] style="display:none"[#endif#]>[#tree RESULT#]</ul>[#endif RESULT#]
  </li>

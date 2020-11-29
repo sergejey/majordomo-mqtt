@@ -618,7 +618,7 @@ class mqtt extends module
     function delete_mqtt_path($path)
     {
         if (!$path) return;
-        $records = SQLSelect("SELECT ID FROM mqtt WHERE PATH LIKE '".DBSafe($path)."%'");
+        $records = SQLSelect("SELECT ID FROM mqtt WHERE PATH LIKE '".DBSafe($path)."/%' OR PATH='".DBSafe($path)."'");
         foreach($records as $rec) {
             $this->delete_mqtt($rec['ID']);
         }

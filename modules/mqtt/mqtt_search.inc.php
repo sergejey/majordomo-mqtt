@@ -103,6 +103,10 @@
     //$res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];
     $res[$i]['VALUE']=str_replace('":','": ',$res[$i]['VALUE']);
     if ($res[$i]['TITLE']==$res[$i]['PATH'] && !$out['TREE']) $res[$i]['PATH']='';
+    if ($res[$i]['LINKED_OBJECT']!="") {
+     $object_rec=SQLSelectOne("SELECT * FROM objects WHERE TITLE='".DBSafe($res[$i]['LINKED_OBJECT'])."'");
+     $res[$i]['LINKED_PROPERTY'].=' &mdash; '.$object_rec['DESCRIPTION'];
+    }
    }
    $out['RESULT']=$res;
 
