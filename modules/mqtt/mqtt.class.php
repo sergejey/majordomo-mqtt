@@ -673,7 +673,7 @@ class mqtt extends module
  mqtt: TITLE varchar(255) NOT NULL DEFAULT ''
  mqtt: LOCATION_ID int(10) NOT NULL DEFAULT '0'
  mqtt: UPDATED datetime
- mqtt: VALUE varchar(255) NOT NULL DEFAULT ''
+ mqtt: VALUE varchar(1024) NOT NULL DEFAULT ''
  mqtt: PATH varchar(255) NOT NULL DEFAULT ''
  mqtt: PATH_WRITE varchar(255) NOT NULL DEFAULT ''
  mqtt: REPLACE_LIST varchar(255) NOT NULL DEFAULT ''
