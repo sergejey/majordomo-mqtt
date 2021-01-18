@@ -374,25 +374,28 @@ class mqtt extends module
             $rec['VALUE'] = $value . '';
             $rec['UPDATED'] = date('Y-m-d H:i:s');
             SQLUpdate('mqtt', $rec);
-            /* Update property in linked object if it exist */
-            if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
 
-                $value = $rec['VALUE'];
-                if ($rec['REPLACE_LIST'] != '') {
-                    $list = explode(',', $rec['REPLACE_LIST']);
-                    foreach ($list as $pair) {
-                        $pair = trim($pair);
-                        list($new, $old) = explode('=', $pair);
-                        if ($value == $new) {
-                            $value = $old;
-                            break;
+            if (!$rec['ONLY_NEW_VALUE'] || $rec['VALUE'] <> $old_value)
+            {
+                
+                /* Update property in linked object if it exist */
+                if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
+                    if ($rec['REPLACE_LIST'] != '') {
+                        $list = explode(',', $rec['REPLACE_LIST']);
+                        foreach ($list as $pair) {
+                            $pair = trim($pair);
+                            list($new, $old) = explode('=', $pair);
+                            if ($value == $new) {
+                                $value = $old;
+                                break;
+                            }
                         }
                     }
+                    setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array('mqtt' => '0'));
                 }
-                setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array('mqtt' => '0'));
             }
             if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
-                !(strtolower($rec['LINKED_PROPERTY'])=='status' && strtolower($rec['LINKED_METHOD'])=='switch')) {
+             !(strtolower($rec['LINKED_PROPERTY'])=='status' && strtolower($rec['LINKED_METHOD'])=='switch')) {
                 callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE'=>$rec['VALUE'],'OLD_VALUE'=>$old_value));
             }
 
@@ -684,6 +687,7 @@ class mqtt extends module
  mqtt: RETAIN int(3) NOT NULL DEFAULT '0'
  mqtt: DISP_FLAG int(3) NOT NULL DEFAULT '0'
  mqtt: READONLY int(3) NOT NULL DEFAULT '0'
+ mqtt: ONLY_NEW_VALUE int(3) NOT NULL DEFAULT '0'
 EOD;
         parent::dbInstall($data);
     }
