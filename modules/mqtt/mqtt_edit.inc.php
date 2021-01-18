@@ -23,7 +23,8 @@ if ($this->mode == 'update') {
         $rec['LOCATION_ID'] = $this->location_id;
     } else {
         global $location_id;
-        $rec['LOCATION_ID'] = $location_id;
+        if ($location_id != "")
+            $rec['LOCATION_ID'] = $location_id;
     }
     //updating 'PATH' (varchar, required)
     global $path;
@@ -67,6 +68,8 @@ if ($this->mode == 'update') {
     else { $rec['LINKED_METHOD'] = $linked_method; }
 
     $rec['READONLY']=gr('readonly','int');
+    
+    $rec['ONLY_NEW_VALUE']=gr('only_new_value','int');
 
     //UPDATING RECORD
     if ($ok) {

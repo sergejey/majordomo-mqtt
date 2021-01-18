@@ -158,6 +158,16 @@
  <div class="controls"><input type="text" name="linked_property" id="linked_method" value="[#LINKED_METHOD#]" class="input form-control"></div>
 </div>
 [#module name="linkedobject" object_field="linked_object" property_field="linked_property" method_field="linked_method" width="200"#]
+
+<div class="form-group">
+ <label class="control-label"[#if ERR_VALUE#] style="color:red;font-weight:bold"[#endif#]>
+ Set only new value:
+ </label>
+ <div class="controls">
+  <input type="checkbox" name="only_new_value" value="1"  [#if ONLY_NEW_VALUE="1"#]checked[#endif#] style="float: left;">
+ </div>
+</div>
+
  <div class="form-group">
   <label class="control-label">
    Replace list:
@@ -194,6 +204,7 @@
  <tr>
   <td><a href="?view_mode=edit_mqtt&id=[#ID#]">[#PATH#]</a></td>
   <td><span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span></td>
+  <td><span id="mqtt[#ID#]" class="mqtt_updated">[#UPDATED#]</span></td>
  </tr>
  [#end CHILDS#]
 </table>
