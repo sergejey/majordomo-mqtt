@@ -396,7 +396,7 @@ class mqtt extends module
             }
             if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
              !(strtolower($rec['LINKED_PROPERTY'])=='status' && strtolower($rec['LINKED_METHOD'])=='switch')) {
-                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE'=>$rec['VALUE'],'OLD_VALUE'=>$old_value));
+                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('NEW_VALUE'=>$rec['VALUE'],'OLD_VALUE'=>$old_value));
             }
 
         }
