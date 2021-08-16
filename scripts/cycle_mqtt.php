@@ -93,18 +93,15 @@ while ($mqtt_client->proc()) {
     }
     */
 
-    $currentMillis = round(microtime(true) * 10000);
-
-    if ($currentMillis - $previousMillis > 10000) {
-        $previousMillis = $currentMillis;
-
+    if (time() - $checked_time > 20) {
+        $checked_time = time();
+        //echo date("H:i:s") . " Cycle " . basename(__FILE__) . ' is running ';
         setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
-
-        if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
-            $mqtt_client->close();
-            $db->Disconnect();
-            exit;
-        }
+    }
+    if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
+        $mqtt_client->close();
+        $db->Disconnect();
+        exit;
     }
 }
 
