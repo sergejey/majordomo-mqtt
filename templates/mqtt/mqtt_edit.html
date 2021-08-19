@@ -11,7 +11,7 @@
 		</div>
 		[#endif ERR#]
 			
-        <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+        <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_PATH#]color:red;font-weight:bold[#endif#]"><#LANG_PATH#>: <font color="red">*</font></label>
 				<div class="col-lg-10 col-md-8">
@@ -70,9 +70,9 @@
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;"><#LANG_VALUE#>: </label>
 				<div class="col-lg-10 col-md-8">
-					<div class="well well-lg">
+					<span class="well well-lg" style="padding: 5px;width: 100%;display: inline-block;">
 						<span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
-					</div>
+					</span>
 					<div style="position: absolute;bottom: 20px;right: 20px;color: gray;font-size: 1.1rem;"><#LANG_UPDATED#>: [#UPDATED#]</div>
 				</div>
 			</div>
@@ -160,7 +160,7 @@
         </form>
 
 		[#if CHILDS#]
-		<div class="table-responsive table-bordered table-striped tableXray ">
+		<div class="table-responsive table-bordered table-striped tableXray " style="margin-top: 10px;">
 			<table class="table">
 				[#begin CHILDS#]
 				<tr>
