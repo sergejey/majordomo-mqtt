@@ -56,14 +56,19 @@ if ($mqtt->config['MQTT_QUERY']) {
 $mqtt_client = new Bluerhinos\phpMQTT($host, $port, $client_name);
 
 if ($mqtt->config['MQTT_AUTH']) {
-    if (!$mqtt_client->connect(true, NULL, $username, $password)) {
+	$connect = $mqtt_client->connect(true, NULL, $username, $password);
+    if (!$connect) {
         exit(1);
     }
 } else {
-    if (!$mqtt_client->connect()) {
+	$connect = $mqtt_client->connect();
+    if (!$connect) {
         exit(1);
     }
 }
+
+$mqtt->config['MQTT_STATUS'] = ($connect) ? '1' : '0';
+$mqtt->saveConfig();
 
 $query_list = explode(',', $query);
 $total = count($query_list);
@@ -101,7 +106,10 @@ while ($mqtt_client->proc()) {
         setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
 
         if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
-            $mqtt_client->close();
+            $mqtt->config['MQTT_STATUS'] = '0';
+			$mqtt->saveConfig();
+			
+			$mqtt_client->close();
             $db->Disconnect();
             exit;
         }
@@ -109,6 +117,8 @@ while ($mqtt_client->proc()) {
 }
 
 $mqtt_client->close();
+$mqtt->config['MQTT_STATUS'] = '0';
+$mqtt->saveConfig();
 
 /**
  * Process message
