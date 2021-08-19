@@ -67,9 +67,6 @@ if ($mqtt->config['MQTT_AUTH']) {
     }
 }
 
-$mqtt->config['MQTT_STATUS'] = ($connect) ? '1' : '0';
-$mqtt->saveConfig();
-
 $query_list = explode(',', $query);
 $total = count($query_list);
 echo date('H:i:s') . " Topics to watch: $query (Total: $total)\n";
@@ -106,8 +103,6 @@ while ($mqtt_client->proc()) {
         setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
 
         if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
-            $mqtt->config['MQTT_STATUS'] = '0';
-			$mqtt->saveConfig();
 			
 			$mqtt_client->close();
             $db->Disconnect();
@@ -117,8 +112,6 @@ while ($mqtt_client->proc()) {
 }
 
 $mqtt_client->close();
-$mqtt->config['MQTT_STATUS'] = '0';
-$mqtt->saveConfig();
 
 /**
  * Process message
