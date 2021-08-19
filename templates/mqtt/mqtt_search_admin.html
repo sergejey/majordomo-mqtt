@@ -30,7 +30,7 @@
 		<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_MQTT_CLIENT#>: <font color="red">*</font>
+					<#LANG_NEW_MQTT_CLIENT#>: <span style="color:red">*</span>
 				</label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="mqtt_client" value="<#MQTT_CLIENT#>" class="form-control">
@@ -38,7 +38,7 @@
 			</div>
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_MQTT_HOST#>: <font color="red">*</font>
+					<#LANG_NEW_MQTT_HOST#>: <span style="color:red">*</span>
 				</label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="mqtt_host" value="<#MQTT_HOST#>" class="form-control">
@@ -46,7 +46,7 @@
 			</div>
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_MQTT_PORT#>: <font color="red">*</font>
+					<#LANG_NEW_MQTT_PORT#>: <span style="color:red">*</span>
 				</label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="mqtt_port" value="<#MQTT_PORT#>" class="form-control">
@@ -54,7 +54,7 @@
 			</div>
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_MQTT_QUERY#>: <font color="red">*</font>
+					<#LANG_NEW_MQTT_QUERY#>: <span style="color:red">*</span>
 				</label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="mqtt_query" value="<#MQTT_QUERY#>" class="form-control">
@@ -63,7 +63,7 @@
 			
 			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_MQTT_REQ_AUTH#>:
+					<#LANG_NEW_MQTT_REQ_AUTH#>:
 				</label>
 				<div class="col-lg-10 col-md-8">
 					<input type="checkbox" style="height: 20px;width: 20px;" onchange="$('#mqtt_req_pass').toggle('slow');" name="mqtt_auth" value="1" [#if MQTT_AUTH="1" #] checked[#endif#]>
@@ -73,7 +73,7 @@
 			<div id="mqtt_req_pass" style="display:none;">
 				<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 					<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-						<#LANG_MQTT_USERNAME#>:
+						<#LANG_NEW_MQTT_USERNAME#>:
 					</label>
 					<div class="col-lg-10 col-md-8">
 						<input type="text" name="mqtt_username" value="<#MQTT_USERNAME#>" class="form-control">
@@ -81,7 +81,7 @@
 				</div>
 				<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
 					<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-						<#LANG_MQTT_PASSWORD#>:
+						<#LANG_NEW_MQTT_PASSWORD#>:
 					</label>
 					<div class="col-lg-10 col-md-8">
 						<input type="text" name="mqtt_password" value="<#MQTT_PASSWORD#>" class="form-control">
