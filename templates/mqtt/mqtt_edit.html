@@ -1,5 +1,181 @@
+<div class="row" style="margin-right: -15px;margin-left: -15px;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		 [#if OK#]
+		<div class="alert alert-success">
+			<#LANG_DATA_SAVED#>
+		</div>
+		[#endif OK#]
+		[#if ERR#]
+		<div class="alert alert-error">
+			<#LANG_FILLOUT_REQURED#>
+		</div>
+		[#endif ERR#]
+			
+        <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_PATH#]color:red;font-weight:bold[#endif#]"><#LANG_PATH#>: <font color="red">*</font></label>
+				<div class="col-lg-10 col-md-8">
+					<input type="text" name="path" value="[#PATH#]" class="input form-control">
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;"><#LANG_PATH#> (write): </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="text" name="path_write" value="[#PATH_WRITE#]" class="input form-control">
+				</div>
+			</div>
+			[#if !IS_SET_LOCATION_ID#]
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LOCATION_ID#]color:red;font-weight:bold[#endif#]"><#LANG_LOCATION#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<select name="location_id" class="form-control input">
+						<option value="">select</option>
+						[#begin LOCATION_ID_OPTIONS#]
+							<option value="[#ID#]" [#if SELECTED#] selected[#endif#]>[#TITLE#]</option>
+						[#end LOCATION_ID_OPTIONS#]
+					</select>
+				</div>
+			</div>
+			[#endif IS_SET_LOCATION_ID#]
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">Not display write path in list: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="hidden" name="disp_flag" value="0"> <!-- value for unchecked checkbox -->
+                    <input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1" #]checked[#endif#]>
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;"><#LANG_READ_ONLY#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="radio" name="readonly" value="1" [#if READONLY="1" #] checked[#endif#]><#LANG_YES#>
+                    <input type="radio" name="readonly" value="0" [#if READONLY!="1" #] checked[#endif#]><#LANG_NO#>
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">QoS: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="radio" name="qos" value="0" [#if QOS="0" #] checked[#endif#]> 0
+                    <input type="radio" name="qos" value="1" [#if QOS="1" #] checked[#endif#]> 1
+                    <input type="radio" name="qos" value="2" [#if QOS="2" #] checked[#endif#]> 2
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">Retain: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="radio" name="retain" value="1" [#if RETAIN="1" #] checked[#endif#]> <#LANG_YES#>
+                    <input type="radio" name="retain" value="0" [#if RETAIN!="1" #] checked[#endif#]> <#LANG_NO#>
+				</div>
+			</div>
+			[#if ID!=""#]
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;"><#LANG_VALUE#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<span class="well well-lg" style="padding: 5px;width: 100%;display: inline-block;">
+						<span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
+					</span>
+					<div style="position: absolute;bottom: 20px;right: 20px;color: gray;font-size: 1.1rem;"><#LANG_UPDATED#>: [#UPDATED#]</div>
+				</div>
+			</div>
+			[#endif#]
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;"><#LANG_SET#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="checkbox" name="set_new_value" value="1" style="float: left;">
+					<span style="overflow:hidden; display:block; padding-left:10px;">
+						<input type="text" name="new_value" value="" class="input form-control">
+					</span>
+				</div>
+			</div>
+			[#if ID!=""#]
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;"><#LANG_DEVICE#>: </label>
+				<div class="col-lg-10 col-md-8">
+					[#module name="devices" action="link" type="unknow" prefix="mqtt" source_table="mqtt" source_table_id="<#ID#>" linked_object="<#LINKED_OBJECT#>"#]
+				</div>
+			</div>
+			[#endif#]
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LINKED_OBJECT#]color:red;font-weight:bold[#endif#]"><#LANG_LINKED_OBJECT#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="text" name="linked_object" id="linked_object" value="[#LINKED_OBJECT#]" class="input form-control">
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LINKED_PROPERTY#]color:red;font-weight:bold[#endif#]"><#LANG_PROPERTY#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="text" name="linked_property" id="linked_property" value="[#LINKED_PROPERTY#]" class="input form-control">
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LINKED_METHOD#]color:red;font-weight:bold[#endif#]"><#LANG_METHOD#>: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="text" name="linked_property" id="linked_method" value="[#LINKED_METHOD#]" class="input form-control">
+				</div>
+			</div>
+			[#module name="linkedobject" object_field="linked_object" property_field="linked_property" method_field="linked_method" width="100%"#]
+			
+			
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_VALUE#]color:red;font-weight:bold[#endif#]">Set only new value: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="checkbox" name="only_new_value" value="1" [#if ONLY_NEW_VALUE="1" #]checked[#endif#] style="float: left;">
+				</div>
+			</div>
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">Replace list: </label>
+				<div class="col-lg-10 col-md-8">
+					<input type="text" name="replace_list" id="replace_list" value="[#REPLACE_LIST#]" class="input form-control">
+				</div>
+			</div>
+			<div class="form-group" style="margin-right: 0px;margin-left: 0px;">
+				<div class="col-md-12 text-center">
+					[#if ID!=""#]
+                    <button class="btn btn-default btn-success" type="submit" name="subm">
+						<i class="glyphicon glyphicon-floppy-saved"></i><#LANG_SUBMIT#>
+                    </button>
+                    [#else ID#]
+                    <button class="btn btn-default btn-success" type="submit" name="subm">
+						<i class="glyphicon glyphicon-floppy-saved"></i>
+                        <#LANG_ADD#>
+                    </button>
+                    [#endif ID#]
+                    <a href="?" class="btn btn-warning">
+						<i class="glyphicon glyphicon-floppy-remove"></i>
+                        <#LANG_CANCEL#>
+                    </a>
 
-<!-- Table 'mqtt' edit -->
+                    [#if ID!=""#]
+                    <a href="?view_mode=delete_mqtt&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-danger" title="<#LANG_DELETE#>">
+                        <i class="glyphicon glyphicon-remove"></i>
+						<#LANG_DELETE#>
+                    </a>
+                    [#endif#]
+
+                    <input type="hidden" name="id" value="<#ID#>">
+                    <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
+                    <input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
+                    <input type="hidden" name="mode" value="update">
+				</div>
+			</div>
+        </form>
+
+		[#if CHILDS#]
+		<div class="table-responsive table-bordered table-striped tableXray " style="margin-top: 10px;">
+			<table class="table">
+				[#begin CHILDS#]
+				<tr>
+					<td><a href="?view_mode=edit_mqtt&id=[#ID#]">[#PATH#]</a></td>
+					<td><span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span></td>
+					<td><span id="mqtt[#ID#]" class="mqtt_updated">[#UPDATED#]</span></td>
+				</tr>
+				[#end CHILDS#]
+			</table>
+		</div>
+		[#endif CHILDS#]
+    </div>
+</div>
+
+<!---
 <div>
  <a href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
 [#begin PARENTS#]
@@ -8,204 +184,5 @@
 
 [#end PARENTS#]
 </div>
-&nbsp;
-<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
-[#if OK#]
-<div class="alert alert-success"><#LANG_DATA_SAVED#></div>
-[#endif OK#]
-[#if ERR#]
-<div class="alert alert-error"><#LANG_FILLOUT_REQURED#></div>
-[#endif ERR#]
-<fieldset>
-[#if ID=""#]
-<legend><#LANG_NEW_RECORD#></legend>
-[#endif ID#]
-<!-- TITLE (varchar) -->
- <!--#
-<div class="form-group">
- <label class="control-label"[#if ERR_TITLE#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_TITLE#>:
- (*)
- </label>
- <div class="controls"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
-</div>
-#-->
-<!-- PATH (varchar) -->
-<div class="form-group">
- <label class="control-label"[#if ERR_PATH#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_PATH#>:
- (*)
- </label>
- <div class="controls"><input  type="text" name="path" value="[#PATH#]" class="input form-control"></div>
-</div>
 
-<div class="form-group">
- <label class="control-label">
- <#LANG_PATH#> (write):
- (<#LANG_OPTIONAL#>)
- </label>
- <div class="controls"><input  type="text" name="path_write" value="[#PATH_WRITE#]" class="input form-control"></div>
-</div>
-
- <!-- LOCATION_ID (select) -->
- [#if !IS_SET_LOCATION_ID#]
- <div class="form-group">
-  <label class="control-label"[#if ERR_LOCATION_ID#] style="color:red;font-weight:bold"[#endif#]>
-   <#LANG_LOCATION#>:
-  </label>
-  <div class="controls">
-   <select name="location_id"  class="form-control input">
-    <option value="">select
-     [#begin LOCATION_ID_OPTIONS#]<option value="[#ID#]"[#if SELECTED#] selected[#endif#]>[#TITLE#]
-    [#end LOCATION_ID_OPTIONS#]
-   </select>
-  </div>
- </div>
- [#endif IS_SET_LOCATION_ID#]
-
-
- <div class="form-group">
- <label class="control-label">
- Not display write path in list:
- </label>
- <div class="controls">
-  <input type="hidden" name="disp_flag" value="0"> <!-- value for unchecked checkbox -->
-  <input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1"#]checked[#endif#]>
- </div>
-</div>
-
- <div class="form-group">
-  <label class="control-label">
-   <#LANG_READ_ONLY#>:
-  </label>
-  <div class="controls">
-    <input type="radio" name="readonly" value="1"[#if READONLY="1"#] checked[#endif#]> <#LANG_YES#>
-   <input type="radio" name="readonly" value="0"[#if READONLY!="1"#] checked[#endif#]> <#LANG_NO#>
-  </div>
- </div>
-
-<div class="form-group">
- <label class="control-label">
- QoS:
- (<#LANG_OPTIONAL#>)
- </label>
- <div class="controls">
- <input type="radio" name="qos" value="0"[#if QOS="0"#] checked[#endif#]> 0
- <input type="radio" name="qos" value="1"[#if QOS="1"#] checked[#endif#]> 1
- <input type="radio" name="qos" value="2"[#if QOS="2"#] checked[#endif#]> 2
- </div>
-</div>
-
-<div class="form-group">
- <label class="control-label">
- Retain:
- (<#LANG_OPTIONAL#>)
- </label>
- <div class="controls">
- <input type="radio" name="retain" value="1"[#if RETAIN="1"#] checked[#endif#]> <#LANG_YES#>
- <input type="radio" name="retain" value="0"[#if RETAIN!="1"#] checked[#endif#]> <#LANG_NO#>
- </div>
-</div>
-
-<div class="form-group">
- <label class="control-label"[#if ERR_VALUE#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_VALUE#>:
- </label>
- <div class="controls">
- <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span> (<#LANG_UPDATED#>: [#UPDATED#])
- </div>
-</div>
-
-<div class="form-group">
- <label class="control-label"[#if ERR_VALUE#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_SET#>:
- </label>
- <div class="controls">
-  <input type="checkbox" name="set_new_value" value="1" style="float: left;">
-  <span style="overflow:hidden; display:block; padding-left:10px;">
-   <input type="text" name="new_value" value="" class="input form-control">
-  </span>
- </div>
-</div>
-
-
-<!-- DEVICE -->
-<div class="form-group">
- <label class="control-label">
- <#LANG_DEVICE#>:
- </label>
- <div class="controls">[#module name="devices" action="link" type="unknow" prefix="mqtt" source_table="mqtt" source_table_id="<#ID#>" linked_object="<#LINKED_OBJECT#>"#]</div>
-</div>
-<!-- LINKED_OBJECT (varchar) -->
-<div class="form-group">
- <label class="control-label"[#if ERR_LINKED_OBJECT#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_LINKED_OBJECT#>:
- </label>
- <div class="controls"><input type="text" name="linked_object" id="linked_object" value="[#LINKED_OBJECT#]" class="input form-control"></div>
-</div>
-<!-- LINKED_PROPERTY (varchar) -->
-<div class="form-group">
- <label class="control-label"[#if ERR_LINKED_PROPERTY#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_PROPERTY#>:
- </label>
- <div class="controls"><input type="text" name="linked_property" id="linked_property" value="[#LINKED_PROPERTY#]" class="input form-control"></div>
-</div>
-<!-- LINKED_METHOD (varchar) -->
-<div class="form-group">
- <label class="control-label"[#if ERR_LINKED_METHOD#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_METHOD#>:
- </label>
- <div class="controls"><input type="text" name="linked_property" id="linked_method" value="[#LINKED_METHOD#]" class="input form-control"></div>
-</div>
-[#module name="linkedobject" object_field="linked_object" property_field="linked_property" method_field="linked_method" width="200"#]
-
-<div class="form-group">
- <label class="control-label"[#if ERR_VALUE#] style="color:red;font-weight:bold"[#endif#]>
- Set only new value:
- </label>
- <div class="controls">
-  <input type="checkbox" name="only_new_value" value="1"  [#if ONLY_NEW_VALUE="1"#]checked[#endif#] style="float: left;">
- </div>
-</div>
-
- <div class="form-group">
-  <label class="control-label">
-   Replace list:
-   <#LANG_HCB#>replacelist<#LANG_HCE#>
-  </label>
-  <div class="controls"><input type="text" name="replace_list" id="replace_list" value="[#REPLACE_LIST#]" class="input form-control"></div>
- </div>
-
-<div class="form-actions">
- [#if ID!=""#]
- <button type="submit" name="subm" value="<#LANG_SUBMIT#>" class="btn btn-defaul btn-primary"><#LANG_SUBMIT#></button>
- [#else ID#]
- <button type="submit" name="subm" value="<#LANG_ADD#>" class="btn btn-defaul btn-primary"><#LANG_ADD#></button>
- [#endif ID#]
- <a href="?" class="btn btn-default"><#LANG_CANCEL#></a>
-
- [#if ID!=""#]
- &nbsp;&nbsp;&nbsp;
- <a href="?view_mode=delete_mqtt&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i> <#LANG_DELETE#></a>
- [#endif#]
-
-<input type="hidden" name="id" value="<#ID#>">
-<input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
-<input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
-<input type="hidden" name="mode" value="update">
-</div>
-</fieldset>
-</form>
-
-[#if CHILDS#]
-&nbsp;
-<table class="table">
- [#begin CHILDS#]
- <tr>
-  <td><a href="?view_mode=edit_mqtt&id=[#ID#]">[#PATH#]</a></td>
-  <td><span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span></td>
-  <td><span id="mqtt[#ID#]" class="mqtt_updated">[#UPDATED#]</span></td>
- </tr>
- [#end CHILDS#]
-</table>
-[#endif CHILDS#]
+--->
