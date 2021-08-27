@@ -82,6 +82,8 @@ foreach ($topics as $k => $v) {
 }
 $previousMillis = 0;
 
+$all_topics = array();
+
 while ($mqtt_client->proc()) {
 
     /*
@@ -124,12 +126,14 @@ function procmsg($topic, $msg) {
     //getURLBackground($url);
     if (!isset($topic) || !isset($msg)) return false;
 
-    echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
-    if (function_exists('callAPI')) {
-        callAPI('/api/module/mqtt','GET',array('topic'=>$topic,'msg'=>$msg));
-    } else {
-        global $mqtt;
-        $mqtt->processMessage($topic, $msg);
+    if (!isset($all_topics[$topic]) or $all_topics[$topic] != $msg) {
+        $all_topics[$topic] = $msg;
+        if (function_exists('callAPI')) {
+            callAPI('/api/module/mqtt','GET',array('topic'=>$topic,'msg'=>$msg));
+        } else {
+            global $mqtt;
+            $mqtt->processMessage($topic, $msg);
+        }
     }
 }
 
