@@ -8,7 +8,7 @@ include_once("./lib/threads.php");
 set_time_limit(0);
 
 // connecting to database
-$db = new mysql(DB_HOST, '', DB_USER, DB_PASSWORD, DB_NAME);
+//$db = new mysql(DB_HOST, '', DB_USER, DB_PASSWORD, DB_NAME);
 
 include_once("./load_settings.php");
 include_once(DIR_MODULES . "control_modules/control_modules.class.php");
@@ -86,30 +86,13 @@ $all_topics = array();
 
 while ($mqtt_client->proc()) {
 
-    /*
-    $tmp=SQLSelect("SELECT * FROM mqtt_queue ORDER BY ID");
-    if ($tmp[0]['ID']) {
-     $total=count($tmp);
-     for($i=0;$i<$total;$i++) {
-      SQLExec('DELETE FROM mqtt_queue WHERE ID='.$tmp[$i]['ID']);
-      $mqtt_client->publish($tmp[$i]['PATH'],$tmp[$i]['VALUE']);
-     }
+    if (time() - $checked_time > 10) {
+        $checked_time = time();
+        setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', $checked_time, 1);
     }
-    */
-
-    $currentMillis = round(microtime(true) * 10000);
-
-    if ($currentMillis - $previousMillis > 10000) {
-        $previousMillis = $currentMillis;
-
-        setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
-
-        if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
-			
-			$mqtt_client->close();
-            $db->Disconnect();
-            exit;
-        }
+     if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
+        $mqtt_client->close();
+        exit;
     }
 }
 
@@ -137,4 +120,4 @@ function procmsg($topic, $msg) {
     }
 }
 
-$db->Disconnect(); // closing database connection
+//$db->Disconnect(); // closing database connection
