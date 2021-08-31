@@ -1,6 +1,6 @@
 <?php
 $dictionary=array(
-'NEW_MQTT_CLIENT'=>'Имя клиента',
+'NEW_MQTT_CLIENT'=>'Имя клиента ',
 'NEW_MQTT_HOST'=>'Адрес сервера',
 'NEW_MQTT_PORT'=>'Порт сервера',
 'NEW_MQTT_QUERY'=>'Путь',
