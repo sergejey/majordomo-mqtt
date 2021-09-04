@@ -107,20 +107,20 @@
 				</div>
 			</div>
 			[#endif#]
-			<div class="form-group ">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LINKED_OBJECT#]color:red;font-weight:bold[#endif#]"><#LANG_LINKED_OBJECT#>: </label>
+			<div class="form-group [#if ERR_LINKED_OBJECT#]has-error[#endif#]">
+				<label class="col-lg-2 col-md-4"><#LANG_LINKED_OBJECT#>: </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="linked_object" id="linked_object" value="[#LINKED_OBJECT#]" class="input form-control">
 				</div>
 			</div>
-			<div class="form-group ">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LINKED_PROPERTY#]color:red;font-weight:bold[#endif#]"><#LANG_PROPERTY#>: </label>
+			<div class="form-group [#if ERR_LINKED_PROPERTY#]has-error[#endif#]">
+				<label class="col-lg-2 col-md-4"><#LANG_PROPERTY#>: </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="linked_property" id="linked_property" value="[#LINKED_PROPERTY#]" class="input form-control">
 				</div>
 			</div>
-			<div class="form-group ">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;[#if ERR_LINKED_METHOD#]color:red;font-weight:bold[#endif#]"><#LANG_METHOD#>: </label>
+			<div class="form-group [#if ERR_LINKED_METHOD#]has-error[#endif#]">
+				<label class="col-lg-2 col-md-4"><#LANG_METHOD#>: </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="linked_property" id="linked_method" value="[#LINKED_METHOD#]" class="input form-control">
 				</div>

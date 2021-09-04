@@ -230,6 +230,11 @@ class mqtt extends module
     function mqttPublish($topic, $value, $qos = 0, $retain = 0, $write_type = 0)
     {
 
+        $this->getConfig();
+        if ($write_type==0 && $this->config['MQTT_WRITE_METHOD']) {
+            $write_type=2;
+        }
+
         if ($write_type==2) {
             $data=array('v'=>$value);
             if ($qos) {
@@ -244,7 +249,8 @@ class mqtt extends module
 
         include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
 
-        $this->getConfig();
+
+
         if ($this->config['MQTT_CLIENT']) {//
             $client_name = $this->config['MQTT_CLIENT'];
         } else {
@@ -450,6 +456,7 @@ class mqtt extends module
         $out['MQTT_HOST'] = $this->config['MQTT_HOST'];
         $out['MQTT_PORT'] = $this->config['MQTT_PORT'];
         $out['MQTT_QUERY'] = $this->config['MQTT_QUERY'];
+        $out['MQTT_WRITE_METHOD'] = (int)$this->config['MQTT_WRITE_METHOD'];
 
         if (!$out['MQTT_HOST']) {
             $out['MQTT_HOST'] = 'localhost';
@@ -481,6 +488,7 @@ class mqtt extends module
             $this->config['MQTT_AUTH'] = (int)$mqtt_auth;
             $this->config['MQTT_PORT'] = (int)$mqtt_port;
             $this->config['MQTT_QUERY'] = trim($mqtt_query);
+            $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method','int');
             $this->saveConfig();
 
             setGlobal('cycle_mqttControl', 'restart');

@@ -88,6 +88,17 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+					Write method (<#LANG_DEFAULT#>): <span style="color:red">*</span>
+				</label>
+				<div class="col-lg-10 col-md-8">
+					<input type="radio" name="mqtt_write_method" value="0"[#if MQTT_WRITE_METHOD="0" || MQTT_WRITE_METHOD=""#] checked[#endif#]> New connection
+					<input type="radio" name="mqtt_write_method" value="2"[#if MQTT_WRITE_METHOD="2"#] checked[#endif#]> Queue
+				</div>
+			</div>
+
 			<div class="form-group" style="margin-right: 0px;margin-left: 0px;">
 				<div class="col-md-12 text-center">
 					<button type="submit" name="subm" value="Submit" class="btn btn-success">

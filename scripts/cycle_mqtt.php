@@ -96,7 +96,7 @@ while ($mqtt_client->proc()) {
     */
     $queue = checkOperationsQueue('mqtt_queue');
     foreach ($queue as $mqtt_data) {
-        echo "queue: ".json_encode($mqtt_data);
+        //echo "queue: ".json_encode($mqtt_data);
         $topic=$mqtt_data['DATANAME'];
         $data_value=json_decode($mqtt_data['DATAVALUE'],true);
         $value=$data_value['v'];
@@ -109,7 +109,7 @@ while ($mqtt_client->proc()) {
             $retain=$data_value['r'];
         }
         if ($topic!='') {
-            echo "Publishing from queue to $topic : $value\n";
+            echo "Publishing to $topic : $value\n";
             $mqtt_client->publish($topic, $value, $qos, $retain);
         }
     }
@@ -144,7 +144,7 @@ function procmsg($topic, $msg) {
     //getURLBackground($url);
     if (!isset($topic) || !isset($msg)) return false;
 
-    echo date("Y-m-d H:i:s") . " Topic:{$topic} $msg\n";
+    echo date("Y-m-d H:i:s") . " Received from {$topic} : $msg\n";
     if (function_exists('callAPI')) {
         callAPI('/api/module/mqtt','GET',array('topic'=>$topic,'msg'=>$msg));
     } else {
