@@ -70,6 +70,7 @@ if ($this->mode == 'update') {
     $rec['READONLY']=gr('readonly','int');
     
     $rec['ONLY_NEW_VALUE']=gr('only_new_value','int');
+    $rec['WRITE_TYPE']=gr('write_type','int');
 
     //UPDATING RECORD
     if ($ok) {

@@ -94,6 +94,26 @@ while ($mqtt_client->proc()) {
      }
     }
     */
+    $queue = checkOperationsQueue('mqtt_queue');
+    foreach ($queue as $mqtt_data) {
+        echo "queue: ".json_encode($mqtt_data);
+        $topic=$mqtt_data['DATANAME'];
+        $data_value=json_decode($mqtt_data['DATAVALUE'],true);
+        $value=$data_value['v'];
+        $qos=0;
+        if (isset($data_value['q'])) {
+            $qos=$data_value['q'];
+        }
+        $retain=0;
+        if (isset($data_value['r'])) {
+            $retain=$data_value['r'];
+        }
+        if ($topic!='') {
+            echo "Publishing from queue to $topic : $value\n";
+            $mqtt_client->publish($topic, $value, $qos, $retain);
+        }
+    }
+
 
     $currentMillis = round(microtime(true) * 10000);
 

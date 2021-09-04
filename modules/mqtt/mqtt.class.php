@@ -227,9 +227,21 @@ class mqtt extends module
     }
 
 
-    function mqttPublish($topic, $value, $qos = 0, $retain = 0)
+    function mqttPublish($topic, $value, $qos = 0, $retain = 0, $write_type = 0)
     {
-        //include_once("./lib/mqtt/phpMQTT.php");
+
+        if ($write_type==2) {
+            $data=array('v'=>$value);
+            if ($qos) {
+                $data['q']=$qos;
+            }
+            if ($retain) {
+                $data['r']=$retain;
+            }
+            addToOperationsQueue('mqtt_queue',$topic,json_encode($data),true);
+            return 1;
+        }
+
         include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
 
         $this->getConfig();
@@ -299,10 +311,10 @@ class mqtt extends module
                 $url = str_replace('%VALUE%', $value, $url);
                 getURL($url, 0);
             } else {
-                $this->mqttPublish($rec['PATH_WRITE'], $value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+                $this->mqttPublish($rec['PATH_WRITE'], $value, (int)$rec['QOS'], (int)$rec['RETAIN'], (int)$rec['WRITE_TYPE']);
             }
         } else {
-            $this->mqttPublish($rec['PATH'], $value, (int)$rec['QOS'], (int)$rec['RETAIN']);
+            $this->mqttPublish($rec['PATH'], $value, (int)$rec['QOS'], (int)$rec['RETAIN'], (int)$rec['WRITE_TYPE']);
         }
         //$mqtt_client->close();
 
@@ -687,6 +699,7 @@ class mqtt extends module
  mqtt: RETAIN int(3) NOT NULL DEFAULT '0'
  mqtt: DISP_FLAG int(3) NOT NULL DEFAULT '0'
  mqtt: READONLY int(3) NOT NULL DEFAULT '0'
+ mqtt: WRITE_TYPE int(3) NOT NULL DEFAULT '0'
  mqtt: ONLY_NEW_VALUE int(3) NOT NULL DEFAULT '0'
 EOD;
         parent::dbInstall($data);
