@@ -84,36 +84,27 @@ $previousMillis = 0;
 
 while ($mqtt_client->proc()) {
 
-    /*
-    $tmp=SQLSelect("SELECT * FROM mqtt_queue ORDER BY ID");
-    if ($tmp[0]['ID']) {
-     $total=count($tmp);
-     for($i=0;$i<$total;$i++) {
-      SQLExec('DELETE FROM mqtt_queue WHERE ID='.$tmp[$i]['ID']);
-      $mqtt_client->publish($tmp[$i]['PATH'],$tmp[$i]['VALUE']);
-     }
-    }
-    */
-    $queue = checkOperationsQueue('mqtt_queue');
-    foreach ($queue as $mqtt_data) {
-        //echo "queue: ".json_encode($mqtt_data);
-        $topic=$mqtt_data['DATANAME'];
-        $data_value=json_decode($mqtt_data['DATAVALUE'],true);
-        $value=$data_value['v'];
-        $qos=0;
-        if (isset($data_value['q'])) {
-            $qos=$data_value['q'];
-        }
-        $retain=0;
-        if (isset($data_value['r'])) {
-            $retain=$data_value['r'];
-        }
-        if ($topic!='') {
-            echo "Publishing to $topic : $value\n";
-            $mqtt_client->publish($topic, $value, $qos, $retain);
-        }
-    }
 
+    if ($mqtt->config['MQTT_WRITE_METHOD']==2) {
+        $queue = checkOperationsQueue('mqtt_queue');
+        foreach ($queue as $mqtt_data) {
+            $topic=$mqtt_data['DATANAME'];
+            $data_value=json_decode($mqtt_data['DATAVALUE'],true);
+            $value=$data_value['v'];
+            $qos=0;
+            if (isset($data_value['q'])) {
+                $qos=$data_value['q'];
+            }
+            $retain=0;
+            if (isset($data_value['r'])) {
+                $retain=$data_value['r'];
+            }
+            if ($topic!='') {
+                echo "Publishing to $topic : $value\n";
+                $mqtt_client->publish($topic, $value, $qos, $retain);
+            }
+        }
+    }
 
     $currentMillis = round(microtime(true) * 10000);
 
