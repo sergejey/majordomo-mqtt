@@ -105,8 +105,9 @@
         {if $item.LINKED_OBJECT!=""}<i>({$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY})</i>{/if}
         {else}
         &nbsp;{$item.TITLE}
-            <span class="device_title" {if $item.IS_VISIBLE=="1"} style="display:none"{/if}>{if $item.DEVICE_TITLE!=""}<span>&mdash; <i>{$item.DEVICE_TITLE}</i></span>{/if}</span>
         {/if}
+        <span class="device_title" {if $item.IS_VISIBLE=="1"} style="display:none"{/if}>{if $item.DEVICE_TITLE!=""}<span>&mdash; <i><a href="?(panel:{literal}{action=devices}{/literal})&md=devices&view_mode=edit_devices&id={$item.DEVICE_ID}&tab=settings">{$item.DEVICE_TITLE}</a></i></span>{/if}</span>
+
         <a href="?view_mode=delete_path&path={$item.PATH_URL}" onclick="return confirm('{$smarty.const.LANG_ARE_YOU_SURE}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{$item.ID}"></i></a>
         {if $item.RESULT}
         <ul {if $item.IS_VISIBLE!="1"} style="display:none"{/if}>

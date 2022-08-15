@@ -182,9 +182,13 @@ class mqtt extends module
                 } else {
                     $max_updated=0;
                     $device_title='';
+                    $device_id='';
                     for($i=0;$i<$total;$i++) {
                         if ($items[$i]['DEVICE_TITLE']!='' && !$device_title) {
                             $device_title = $items[$i]['DEVICE_TITLE'];
+                        }
+                        if ($items[$i]['DEVICE_ID']!='' && !$device_id) {
+                            $device_id = $items[$i]['DEVICE_ID'];
                         }
                         if ($items[$i]['UPDATED']) {
                             $tm = strtotime($items[$i]['UPDATED']);
@@ -204,6 +208,9 @@ class mqtt extends module
                     }
                     if ($device_title) {
                         $v['DEVICE_TITLE']=$device_title;
+                    }
+                    if ($device_id) {
+                        $v['DEVICE_ID']=$device_id;
                     }
                     $v['UPDATED']=date('Y-m-d H:i:s',$max_updated);
                     if ((time()-$max_updated)<=60*60) {
