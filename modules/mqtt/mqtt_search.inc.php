@@ -114,9 +114,12 @@ if ($res[0]['ID']) {
         $res[$i]['VALUE'] = str_replace('":', '": ', $res[$i]['VALUE']);
         if ($res[$i]['TITLE'] == $res[$i]['PATH'] && !$out['TREE']) $res[$i]['PATH'] = '';
         if ($res[$i]['LINKED_OBJECT'] != "") {
-            $object_rec = SQLSelectOne("SELECT * FROM objects WHERE TITLE='" . DBSafe($res[$i]['LINKED_OBJECT']) . "'");
-            //$res[$i]['LINKED_PROPERTY'] .= ' &mdash; ' . $object_rec['DESCRIPTION'];
+            $object_rec = SQLSelectOne("SELECT objects.DESCRIPTION FROM objects WHERE TITLE='" . DBSafe($res[$i]['LINKED_OBJECT']) . "'");
+            $res[$i]['LINKED_PROPERTY'] .= ' &mdash; ' . $object_rec['DESCRIPTION'];
+            $res[$i]['DEVICE_TITLE']=$object_rec['DESCRIPTION'];
+
         }
+        if (!$res[$i]['TITLE']) $res[$i]['TITLE']='[..]';
     }
     $out['RESULT'] = $res;
 

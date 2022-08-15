@@ -1,0 +1,85 @@
+[#if PAGES#]
+<div class="row" style="margin-right: -15px;margin-left: -15px;">
+    <div class="col-md-12 text-center">
+        <ul class="pagination pagination-sm">
+            [#begin PREVPAGE#]<li><a href="?view_mode=<#VIEW_MODE#>&mode=<#MODE#>&save_qry=1&page=[#NUM#]">&laquo;</a></li>[#end PREVPAGE#]
+            [#begin PAGES#]
+            <li [#if SELECTED#]class="active" [#endif#]><a href="?view_mode=<#VIEW_MODE#>&mode=<#MODE#>&save_qry=1&page=[#NUM#]">[#NUM#]</a></li>
+            [#end PAGES#]
+            [#begin NEXTPAGE#]<li><a href="?view_mode=<#VIEW_MODE#>&mode=<#MODE#>&save_qry=1&page=[#NUM#]">&raquo;</a></li>[#end NEXTPAGE#]
+        </ul>
+    </div>
+</div>
+[#endif PAGES#]
+
+
+<div class="table-responsive">
+    <table class="table table-stripped table-bordered" style="font-size: 1.4rem;">
+        <thead>
+        <tr>
+            <th class="text-center">
+                <a href="?sortby_mqtt=TITLE&save_qry=1">
+                    <#LANG_TITLE#>
+                </a>
+                <nobr>
+                    [#if SORTBY="TITLE"#](+)[#endif#]
+                    [#if SORTBY="TITLE DESC"#](-)[#endif#]</nobr>
+            </th>
+            <th class="text-center">
+                <#LANG_UPDATED#>
+            </th>
+            <th class="text-center">
+                <#LANG_VALUE#>
+            </th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        [#begin RESULT#]
+        <tr>
+            <td>
+                <a href="?view_mode=edit_mqtt&id=[#ID#]" style="text-decoration: none;"><b>[#TITLE#]</b></a>
+
+                [#if PATH!=""#]<br>[#PATH#][#endif#]
+                [#if LINKED_OBJECT!=""#]
+                <p style="color: gray;font-size: 1.2rem;margin: 0px;">↳ <span class="label label-success">[#LINKED_OBJECT#].[#LINKED_PROPERTY#]</span></p>
+                [#endif LINKED_OBJECT#]
+            </td>
+            <td width="15%">
+                [#if UPDATED!=""#]
+                [#UPDATED#]
+                [#else#]
+                &nbsp;
+                [#endif#]
+            </td>
+            <td>
+                <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
+            </td>
+            <td width="10%" class="text-center" style="vertical-align: middle;">
+                [#if "<#ACTION#>"=="admin"#]
+                <div class="btn-group">
+                    <a href="?view_mode=edit_mqtt&id=[#ID#]" class="btn btn-warning btn-sm" title="<#LANG_EDIT#>"><i class="glyphicon glyphicon-pencil"></i></a>
+                    <a href="?view_mode=delete_mqtt&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-danger btn-sm" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i></a>
+                </div>
+
+                [#endif ACTION#]
+            </td>
+        </tr>
+        [#end RESULT#]
+        </tbody>
+    </table>
+</div>
+
+[#if PAGES#]
+<div class="row" style="margin-right: -15px;margin-left: -15px;">
+    <div class="col-md-12 text-center">
+        <ul class="pagination pagination-sm">
+            [#begin PREVPAGE#]<li><a href="?view_mode=<#VIEW_MODE#>&mode=<#MODE#>&save_qry=1&page=[#NUM#]">&laquo;</a></li>[#end PREVPAGE#]
+            [#begin PAGES#]
+            <li [#if SELECTED#]class="active" [#endif#]><a href="?view_mode=<#VIEW_MODE#>&mode=<#MODE#>&save_qry=1&page=[#NUM#]">[#NUM#]</a></li>
+            [#end PAGES#]
+            [#begin NEXTPAGE#]<li><a href="?view_mode=<#VIEW_MODE#>&mode=<#MODE#>&save_qry=1&page=[#NUM#]">&raquo;</a></li>[#end NEXTPAGE#]
+        </ul>
+    </div>
+</div>
+[#endif PAGES#]

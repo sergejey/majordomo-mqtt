@@ -120,6 +120,7 @@ class mqtt extends module
         $this->data = $out;
         $p = new parser(DIR_TEMPLATES . $this->name . "/" . $this->name . ".html", $this->data, $this);
         $this->result = $p->result;
+
     }
 
     function prepareQueueTable()
@@ -180,7 +181,11 @@ class mqtt extends module
                     $v['TITLE'] = $pp . ($v['TITLE'] != '' ? '/' . $v['TITLE'] : '');
                 } else {
                     $max_updated=0;
+                    $device_title='';
                     for($i=0;$i<$total;$i++) {
+                        if ($items[$i]['DEVICE_TITLE']!='' && !$device_title) {
+                            $device_title = $items[$i]['DEVICE_TITLE'];
+                        }
                         if ($items[$i]['UPDATED']) {
                             $tm = strtotime($items[$i]['UPDATED']);
                             if (!isset($items[$i]['COLOR'])) {
@@ -196,6 +201,9 @@ class mqtt extends module
                                 $max_updated=$tm;
                             }
                         }
+                    }
+                    if ($device_title) {
+                        $v['DEVICE_TITLE']=$device_title;
                     }
                     $v['UPDATED']=date('Y-m-d H:i:s',$max_updated);
                     if ((time()-$max_updated)<=60*60) {
