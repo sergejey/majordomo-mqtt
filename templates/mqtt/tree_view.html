@@ -87,7 +87,9 @@
             [#if TITLE!=""#][#TITLE#][#else#][..][#endif#]
         </a>
         : <span id="mqtt[#ID#]" class="mqtt_value">[#VALUE#]</span>
-        [#if LINKED_OBJECT!=""#]<i>([#LINKED_OBJECT#].[#LINKED_PROPERTY#])</i>[#endif LINKED_OBJECT#]
+        [#if LINKED_OBJECT!=""#]<i>
+        ([#if LINKED_PROPERTY=""#]M: [#else#]P: [#endif LINKED_PROPERTY#][#LINKED_OBJECT#].[#if LINKED_PROPERTY!=""#][#LINKED_PROPERTY#][#else#][#LINKED_METHOD#][#endif LINKED_PROPERTY#])
+        </i>[#endif LINKED_OBJECT#]
         [#else#]
         &nbsp;[#TITLE#]
         [#endif#]
