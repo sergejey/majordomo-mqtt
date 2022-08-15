@@ -102,7 +102,11 @@
          {if $item.TITLE!=""}{$item.TITLE}{else}[..]{/if}
         </a>
         : <span id="mqtt{$item.ID}" class="mqtt_value">{$item.VALUE}</span>
-        {if $item.LINKED_OBJECT!=""}<i>({$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY})</i>{/if}
+        {if $item.LINKED_OBJECT!=""}
+        <i>
+        ({if $item.LINKED_PROPERTY==""}M: {$item.LINKED_OBJECT}.{$item.LINKED_METHOD}{else}P: {$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY}{/if})
+        {/if}
+        </i>
         {else}
         &nbsp;{$item.TITLE}
         {/if}
