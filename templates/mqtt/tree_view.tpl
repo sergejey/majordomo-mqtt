@@ -102,8 +102,10 @@
          {if $item.TITLE!=""}{$item.TITLE}{else}[..]{/if}
         </a>
         : <span id="mqtt{$item.ID}" class="mqtt_value">{$item.VALUE}</span>
-        {if $item.LINKED_OBJECT!=""}<i>({$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY})</i>{/if}
-        {else}
+        {if $item.LINKED_OBJECT!=""}<i>
+        ({if $item.LINKED_PROPERTY==""}M: {$item.LINKED_OBJECT}.{$item.LINKED_METHOD}{else}P: {$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY}{/if})
+        {/if}
+        </i>{else}
         &nbsp;{$item.TITLE}
         {/if}
         <span class="device_title" {if $item.IS_VISIBLE=="1"} style="display:none"{/if}>{if $item.DEVICE_TITLE!=""}<span>&mdash; <i><a href="?(panel:{literal}{action=devices}{/literal})&md=devices&view_mode=edit_devices&id={$item.DEVICE_ID}&tab=settings">{$item.DEVICE_TITLE}</a></i></span>{/if}</span>

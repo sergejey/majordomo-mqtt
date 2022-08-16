@@ -42,7 +42,7 @@
 
                 [#if PATH!=""#]<br>[#PATH#][#endif#]
                 [#if LINKED_OBJECT!=""#]
-                <p style="color: gray;font-size: 1.2rem;margin: 0px;">↳ <span class="label label-success">[#LINKED_OBJECT#].[#LINKED_PROPERTY#]</span></p>
+                <p style="color: gray;font-size: 1.2rem;margin: 0px;">↳ <span class="label label-success">[#if LINKED_PROPERTY=""#]M: [#else#]P: [#endif LINKED_PROPERTY#][#LINKED_OBJECT#].[#if LINKED_PROPERTY!=""#][#LINKED_PROPERTY#][#else#][#LINKED_METHOD#][#endif LINKED_PROPERTY#]</span></p>
                 [#endif LINKED_OBJECT#]
             </td>
             <td width="15%">
