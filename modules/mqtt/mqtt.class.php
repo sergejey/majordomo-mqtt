@@ -362,7 +362,6 @@ class mqtt extends module
         if (preg_match('/\#$/', $path)) {
             return 0;
         }
-
         if ($value === false) $value=0;
         if ($value === true) $value=1;
 
@@ -390,7 +389,7 @@ class mqtt extends module
             /* New query to search 'PATH_WRITE' record in db */
             $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
 
-            if ($rec['ID']) { /* If path_write foud in db */
+            if ($rec['ID']) { /* If path_write found in db */
                 if ($rec['DISP_FLAG'] != "0") { /* check disp_flag */
                     return 0; /* ignore message if flag checked */
                 }
@@ -410,7 +409,7 @@ class mqtt extends module
 
             if (!$rec['ONLY_NEW_VALUE'] || $rec['VALUE'] <> $old_value)
             {
-                
+
                 /* Update property in linked object if it exist */
                 if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
                     if ($rec['REPLACE_LIST'] != '') {
@@ -473,6 +472,11 @@ class mqtt extends module
         $out['MQTT_QUERY'] = $this->config['MQTT_QUERY'];
         $out['MQTT_WRITE_METHOD'] = (int)$this->config['MQTT_WRITE_METHOD'];
 
+        $out['MQTT_STRIPMODE'] = (int)$this->config['MQTT_STRIPMODE'];
+        if (!$out['MQTT_STRIPMODE']) {
+            $out['MQTT_STRIPMODE'] = 0;
+        }
+
         if (!$out['MQTT_HOST']) {
             $out['MQTT_HOST'] = 'localhost';
         }
@@ -495,6 +499,7 @@ class mqtt extends module
             global $mqtt_auth;
             global $mqtt_port;
             global $mqtt_query;
+            global $mqtt_stripmode;
 
             $this->config['MQTT_CLIENT'] = trim($mqtt_client);
             $this->config['MQTT_HOST'] = trim($mqtt_host);
@@ -504,6 +509,7 @@ class mqtt extends module
             $this->config['MQTT_PORT'] = (int)$mqtt_port;
             $this->config['MQTT_QUERY'] = trim($mqtt_query);
             $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method','int');
+            $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode','int');
             $this->saveConfig();
 
             setGlobal('cycle_mqttControl', 'restart');
