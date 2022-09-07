@@ -1,168 +1,174 @@
-
 <div class="row" style="margin-right: -15px;margin-left: -15px;">
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 15px;">
-		<a href="?view_mode=edit_mqtt" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></a>
-		<a href="?view_mode=clear_trash" class="btn btn-danger" title="Delete not linked topics." onclick="return confirm('<#LANG_ARE_YOU_SURE#>');"><i class="glyphicon glyphicon-floppy-remove"></i></a>
-		[#if TREE="1"#]
-		<a href="?tree=0" class="btn btn-default">
-			<#LANG_LIST_VIEW#>
-		</a>
-		[#else#]
-		<a href="?tree=1" class="btn btn-default">
-			<#LANG_TREE_VIEW#>
-		</a>
-		[#endif#]
-		<a class="btn btn-primary" href="#" onClick="$('#filter').toggle('slow');return false;">
-			<#LANG_XRAY_LINE_FILTER#>
-		</a>
-		<a class="btn btn-success" href="#" onClick="$('#api_settings').toggle('slow');return false;">
-			<#LANG_SETUP#>
-		</a>
-	</div>
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<div class="">
-			[#module name="xray" action="service" cycle="mqtt"#]
-		</div>
-	</div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 15px;">
+                <a href="?view_mode=edit_mqtt" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></a>
+                <a href="?view_mode=clear_trash" class="btn btn-danger" title="Delete not linked topics." onclick="return confirm('<#LANG_ARE_YOU_SURE#>');"><i class="glyphicon glyphicon-floppy-remove"></i></a>
+                [#if TREE="1"#]
+                <a href="?tree=0" class="btn btn-default">
+                        <#LANG_LIST_VIEW#>
+                </a>
+                [#else#]
+                <a href="?tree=1" class="btn btn-default">
+                        <#LANG_TREE_VIEW#>
+                </a>
+                [#endif#]
+                <a class="btn btn-primary" href="#" onClick="$('#filter').toggle('slow');return false;">
+                        <#LANG_XRAY_LINE_FILTER#>
+                </a>
+                <a class="btn btn-success" href="#" onClick="$('#api_settings').toggle('slow');return false;">
+                        <#LANG_SETUP#>
+                </a>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="">
+                        [#module name="xray" action="service" cycle="mqtt"#]
+                </div>
+        </div>
 </div>
 
 <div class="row" style="margin-right: -15px;margin-left: -15px;display:none" id="api_settings">
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
-			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_NEW_MQTT_CLIENT#>: <span style="color:red">*</span>
-				</label>
-				<div class="col-lg-10 col-md-8">
-					<input type="text" name="mqtt_client" value="<#MQTT_CLIENT#>" class="form-control">
-				</div>
-			</div>
-			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_NEW_MQTT_HOST#>: <span style="color:red">*</span>
-				</label>
-				<div class="col-lg-10 col-md-8">
-					<input type="text" name="mqtt_host" value="<#MQTT_HOST#>" class="form-control">
-				</div>
-			</div>
-			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_NEW_MQTT_PORT#>: <span style="color:red">*</span>
-				</label>
-				<div class="col-lg-10 col-md-8">
-					<input type="text" name="mqtt_port" value="<#MQTT_PORT#>" class="form-control">
-				</div>
-			</div>
-			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_NEW_MQTT_QUERY#>: <span style="color:red">*</span>
-				</label>
-				<div class="col-lg-10 col-md-8">
-					<input type="text" name="mqtt_query" value="<#MQTT_QUERY#>" class="form-control">
-				</div>
-			</div>
-			
-			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					<#LANG_NEW_MQTT_REQ_AUTH#>:
-				</label>
-				<div class="col-lg-10 col-md-8">
-					<input type="checkbox" style="height: 20px;width: 20px;" onchange="$('#mqtt_req_pass').toggle('slow');" name="mqtt_auth" value="1" [#if MQTT_AUTH="1" #] checked[#endif#]>
-				</div>
-			</div>
-			
-			<div id="mqtt_req_pass" style="display:none;">
-				<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-					<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-						<#LANG_NEW_MQTT_USERNAME#>:
-					</label>
-					<div class="col-lg-10 col-md-8">
-						<input type="text" name="mqtt_username" value="<#MQTT_USERNAME#>" class="form-control">
-					</div>
-				</div>
-				<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-					<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-						<#LANG_NEW_MQTT_PASSWORD#>:
-					</label>
-					<div class="col-lg-10 col-md-8">
-						<input type="text" name="mqtt_password" value="<#MQTT_PASSWORD#>" class="form-control">
-					</div>
-				</div>
-			</div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        <#LANG_NEW_MQTT_CLIENT#>: <span style="color:red">*</span>
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                                        <input type="text" name="mqtt_client" value="<#MQTT_CLIENT#>" class="form-control">
+                                </div>
+                        </div>
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        <#LANG_NEW_MQTT_HOST#>: <span style="color:red">*</span>
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                                        <input type="text" name="mqtt_host" value="<#MQTT_HOST#>" class="form-control">
+                                </div>
+                        </div>
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        <#LANG_NEW_MQTT_PORT#>: <span style="color:red">*</span>
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                                        <input type="text" name="mqtt_port" value="<#MQTT_PORT#>" class="form-control">
+                                </div>
+                        </div>
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        <#LANG_NEW_MQTT_QUERY#>: <span style="color:red">*</span>
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                                        <input type="text" name="mqtt_query" value="<#MQTT_QUERY#>" class="form-control">
+                                </div>
+                        </div>
 
-			<div class="form-group " style="margin-right: 0px;margin-left: 0px;">
-				<label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
-					Write method (<#LANG_DEFAULT#>): <span style="color:red">*</span>
-				</label>
-				<div class="col-lg-10 col-md-8">
-					<input type="radio" name="mqtt_write_method" value="0"[#if MQTT_WRITE_METHOD="0" || MQTT_WRITE_METHOD=""#] checked[#endif#]> New connection
-					<input type="radio" name="mqtt_write_method" value="2"[#if MQTT_WRITE_METHOD="2"#] checked[#endif#]> Queue
-				</div>
-			</div>
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        <#LANG_NEW_MQTT_REQ_AUTH#>:
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                                        <input type="checkbox" style="height: 20px;width: 20px;" onchange="$('#mqtt_req_pass').toggle('slow');" name="mqtt_auth" value="1" [#if MQTT_AUTH="1" #] checked[#endif#]>
+                                </div>
+                        </div>
 
-			<div class="form-group" style="margin-right: 0px;margin-left: 0px;">
-				<div class="col-md-12 text-center">
-					<button type="submit" name="subm" value="Submit" class="btn btn-success">
-						<i class="glyphicon glyphicon-floppy-saved" style="font-size: 1.2rem;"></i>
-						<#LANG_UPDATE#>
-					</button>
-					<input type="hidden" name="view_mode" value="update_settings">
-					<input type="hidden" name="mode" value="update">
-				</div>
-			</div>
-		</form>
-	</div>
+                        <div id="mqtt_req_pass" style="display:none;">
+                                <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                        <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                                <#LANG_NEW_MQTT_USERNAME#>:
+                                        </label>
+                                        <div class="col-lg-10 col-md-8">
+                                                <input type="text" name="mqtt_username" value="<#MQTT_USERNAME#>" class="form-control">
+                                        </div>
+                                </div>
+                                <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                        <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                                <#LANG_NEW_MQTT_PASSWORD#>:
+                                        </label>
+                                        <div class="col-lg-10 col-md-8">
+                                                <input type="text" name="mqtt_password" value="<#MQTT_PASSWORD#>" class="form-control">
+                                        </div>
+                                </div>
+                        </div>
+
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        Write method (<#LANG_DEFAULT#>): <span style="color:red">*</span>
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                                        <input type="radio" name="mqtt_write_method" value="0"[#if MQTT_WRITE_METHOD="0" || MQTT_WRITE_METHOD=""#] checked[#endif#]> New connection
+                                        <input type="radio" name="mqtt_write_method" value="2"[#if MQTT_WRITE_METHOD="2"#] checked[#endif#]> Queue
+                                </div>
+                        </div>
+                        <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
+                                <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
+                                        Обрабатывать только уже привязанные топики:
+                                </label>
+                                <div class="col-lg-10 col-md-8">
+                    <input type="checkbox" style="height: 20px;width: 20px;" name="mqtt_stripmode" value="1" [#if MQTT_STRIPMODE="1" #] checked[#endif#]>
+                                </div>
+                        </div>
+                        <div class="form-group" style="margin-right: 0px;margin-left: 0px;">
+                                <div class="col-md-12 text-center">
+                                        <button type="submit" name="subm" value="Submit" class="btn btn-success">
+                                                <i class="glyphicon glyphicon-floppy-saved" style="font-size: 1.2rem;"></i>
+                                                <#LANG_UPDATE#>
+                                        </button>
+                                        <input type="hidden" name="view_mode" value="update_settings">
+                                        <input type="hidden" name="mode" value="update">
+                                </div>
+                        </div>
+                </form>
+        </div>
 </div>
 
 <div class="row" style="margin-right: -15px;margin-left: -15px;display:none;margin-bottom:10px;" id="filter">
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		<form action="?" method="get" name="frmFilter">
-			<div class="col-md-3" style="padding-left: 0px;">
-				<input type="text" name="title" value="<#TITLE#>" class="form-control" style="margin-bottom: 5px;" placeholder="<#LANG_SEARCH#>">
-			</div>
-			<div class="col-md-4">
-				<select class="form-control" name="searchpath" style="margin-bottom: 5px;">
-					<option value="0">
-						<#LANG_FILTER_BY_CLASS#> (<#LANG_ALL#>)
-								[#begin PATHS#]
-					<option value="[#path#]" [#if path="<#SEARCH#>" #] selected[#endif#]>[#path#]</option>
-					[#end PATHS#]
-				</select>
-			</div>
-			<div class="col-md-4">
-				<select class="form-control" name="location_id" style="margin-bottom: 5px;">
-					<option value="0">
-						<#LANG_FILTER_BY_LOCATION#> (<#LANG_ALL#>)
-								[#begin LOCATIONS#]
-					<option value="[#ID#]" [#if ID="<#LOCATION_ID#>" #] selected[#endif#]>[#TITLE#]</option>
-					[#end LOCATIONS#]
-				</select>
-			</div>
-			<div class="col-md-1">
-				<button type="submit" name="submit" style="margin-bottom: 5px;" class="btn btn-info"><i class="glyphicon glyphicon-search" style="font-size: 1.2rem;"></i>
-					<#LANG_SEARCH#>
-				</button>
-			</div>
-		</form>
-	</div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <form action="?" method="get" name="frmFilter">
+                        <div class="col-md-3" style="padding-left: 0px;">
+                                <input type="text" name="title" value="<#TITLE#>" class="form-control" style="margin-bottom: 5px;" placeholder="<#LANG_SEARCH#>">
+                        </div>
+                        <div class="col-md-4">
+                                <select class="form-control" name="searchpath" style="margin-bottom: 5px;">
+                                        <option value="0">
+                                                <#LANG_FILTER_BY_CLASS#> (<#LANG_ALL#>)
+                                                                [#begin PATHS#]
+                                        <option value="[#path#]" [#if path="<#SEARCH#>" #] selected[#endif#]>[#path#]</option>
+                                        [#end PATHS#]
+                                </select>
+                        </div>
+                        <div class="col-md-4">
+                                <select class="form-control" name="location_id" style="margin-bottom: 5px;">
+                                        <option value="0">
+                                                <#LANG_FILTER_BY_LOCATION#> (<#LANG_ALL#>)
+                                                                [#begin LOCATIONS#]
+                                        <option value="[#ID#]" [#if ID="<#LOCATION_ID#>" #] selected[#endif#]>[#TITLE#]</option>
+                                        [#end LOCATIONS#]
+                                </select>
+                        </div>
+                        <div class="col-md-1">
+                                <button type="submit" name="submit" style="margin-bottom: 5px;" class="btn btn-info"><i class="glyphicon glyphicon-search" style="font-size: 1.2rem;"></i>
+                                        <#LANG_SEARCH#>
+                                </button>
+                        </div>
+                </form>
+        </div>
 </div>
 
 <div class="row" style="margin-right: -15px;margin-left: -15px;">
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		[#if RESULT#]
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                [#if RESULT#]
 
-		[#if TREE="1"#]
-		[#inc tree_view.tpl#]
-		[#else TREE#]
-		[#inc list_view.html#]
-		[#endif TREE#]
-		
-		[#else RESULT#]
-		<p>
-		<div class="alert alert-danger">
-			<#LANG_NO_RECORDS_FOUND#>
-		</div>
-		</p>
-		[#endif RESULT#]
-	</div>
+                [#if TREE="1"#]
+                [#inc tree_view.tpl#]
+                [#else TREE#]
+                [#inc list_view.html#]
+                [#endif TREE#]
+
+                [#else RESULT#]
+                <p>
+                <div class="alert alert-danger">
+                        <#LANG_NO_RECORDS_FOUND#>
+                </div>
+                </p>
+                [#endif RESULT#]
+        </div>
 </div>
