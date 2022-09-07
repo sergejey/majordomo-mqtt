@@ -53,15 +53,21 @@ if ($mqtt->config['MQTT_QUERY']) {
     $query = '/var/now/#';
 }
 
+if ($mqtt->config['MQTT_STRIPMODE']) {
+    $stripmode = $mqtt->config['MQTT_STRIPMODE'];
+} else {
+    $stripmode = 0;
+}
+
 $mqtt_client = new Bluerhinos\phpMQTT($host, $port, $client_name);
 
 if ($mqtt->config['MQTT_AUTH']) {
-	$connect = $mqtt_client->connect(true, NULL, $username, $password);
+        $connect = $mqtt_client->connect(true, NULL, $username, $password);
     if (!$connect) {
         exit(1);
     }
 } else {
-	$connect = $mqtt_client->connect();
+        $connect = $mqtt_client->connect();
     if (!$connect) {
         exit(1);
     }
@@ -114,8 +120,8 @@ while ($mqtt_client->proc()) {
         setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
 
         if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
-			
-			$mqtt_client->close();
+
+                        $mqtt_client->close();
             $db->Disconnect();
             exit;
         }
@@ -134,6 +140,15 @@ function procmsg($topic, $msg) {
     //$url = BASE_URL . '/ajax/mqtt.html?op=process&topic='.urlencode($topic)."&msg=".urlencode($msg);
     //getURLBackground($url);
     if (!isset($topic) || !isset($msg)) return false;
+    global $stripmode;
+
+    if ($stripmode) {
+        $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` like '$topic%' and LINKED_OBJECT>''");
+        if(!$rec['ID']) {
+            echo date("Y-m-d H:i:s") . " Ignore received from {$topic} : $msg\n";
+            return false;
+        }
+    }
 
     echo date("Y-m-d H:i:s") . " Received from {$topic} : $msg\n";
     if (function_exists('callAPI')) {
