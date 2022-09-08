@@ -359,17 +359,24 @@ class mqtt extends module
      */
     function processMessage($path, $value)
     {
+        $this->getConfig();
         if (preg_match('/\#$/', $path)) {
             return 0;
         }
         if ($value === false) $value=0;
-        if ($value === true) $value=1;
+        elseif ($value === true) $value=1;
 
         if (preg_match('/^{/', $value)) {
             $ar = json_decode($value, true);
             foreach ($ar as $k => $v) {
                 if (is_array($v))
                     $v = json_encode($v);
+                if ($this->config['MQTT_STRIPMODE']) {
+                    $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` = '$path/$k' and LINKED_OBJECT>''");
+                    if (!$rec['ID']) {
+                        continue;
+                    }
+                }
                 $this->processMessage($path . '/' . $k, $v);
             }
         }
