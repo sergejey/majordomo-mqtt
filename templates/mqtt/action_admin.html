@@ -18,7 +18,7 @@
                     var oldValue=$('#mqtt'+item_id).html();
                     $('#mqtt'+item_id).html(value);
                     if (value!=oldValue) {
-                        $("#mqtt"+item_id).fadeTo(100, 0.1).fadeTo(200, 1.0);
+                        $("#mqtt"+item_id).stop().fadeTo(100, 0.1).fadeTo(200, 1.0);
                     }
                 }
             }
