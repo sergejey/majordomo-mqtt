@@ -85,6 +85,25 @@
             }
         }
     }
+
+    function openDevice(device_id) {
+        let url = '{$smarty.const.ROOTHTML}panel/devices.html?view_mode=edit_devices&tab=settings&id='+device_id;
+        window.location.href = url;
+    }
+
+    function editItem(item_id) {
+        let url = '{$smarty.const.ROOTHTML}panel/mqtt.html?view_mode=edit_mqtt&id='+item_id;
+        window.location.href = url;
+    }
+
+    function deletePath(path) {
+        if (confirm('{$smarty.const.LANG_ARE_YOU_SURE}')) {
+            let url = '{$smarty.const.ROOTHTML}panel/mqtt.html?view_mode=delete_path&path='+path;
+            window.location.href = url;
+        }
+        return false;
+    }
+
 </script>
 
 {if $RESULT}
@@ -98,19 +117,21 @@
         <i class="glyphicon glyphicon-arrow-right" style="font-size: 1.2rem;color: #ddd;"></i>
         {/if}
         {if $item.ID!=""}
-        <a href="?view_mode=edit_mqtt&id={$item.ID}" title="{$item.PATH}" style="color:{$item.COLOR};text-decoration: none;">
+        <a href="#" onclick="return editItem({$item.ID});" title="{$item.PATH}" style="color:{$item.COLOR};text-decoration: none;">
          {if $item.TITLE!=""}{$item.TITLE}{else}[..]{/if}
         </a>
         : <span id="mqtt{$item.ID}" class="mqtt_value">{$item.VALUE}</span>
-        {if $item.LINKED_OBJECT!=""}<i>
-        ({if $item.LINKED_PROPERTY==""}M: {$item.LINKED_OBJECT}.{$item.LINKED_METHOD}{else}P: {$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY}{/if})
+        {if $item.LINKED_OBJECT!=""}
+            <i>
+                ({if $item.LINKED_PROPERTY==""}M: {$item.LINKED_OBJECT}.{$item.LINKED_METHOD}{else}P: {$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY}{/if})
+            </i>
         {/if}
-        </i>{else}
+        {else}
         &nbsp;{$item.TITLE}
         {/if}
-        <span class="device_title" {if $item.IS_VISIBLE=="1"} style="display:none"{/if}>{if $item.DEVICE_TITLE!=""}<span>&mdash; <i><a href="?(panel:{literal}{action=devices}{/literal})&md=devices&view_mode=edit_devices&id={$item.DEVICE_ID}&tab=settings">{$item.DEVICE_TITLE}</a></i></span>{/if}</span>
-
-        <a href="?view_mode=delete_path&path={$item.PATH_URL}" onclick="return confirm('{$smarty.const.LANG_ARE_YOU_SURE}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{$item.ID}"></i></a>
+        <span class="device_title" {if $item.IS_VISIBLE=="1"} style="display:none"{/if}>{if $item.DEVICE_TITLE!=""}<span>&mdash;
+        <i><a href="#" onclick="return openDevice({$item.DEVICE_ID})">{$item.DEVICE_TITLE}</a></i></span>{/if}</span>
+        <a href="#" onclick="return deletePath('{$item.PATH_URL}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{$item.ID}"></i></a>
         {if $item.RESULT}
         <ul {if $item.IS_VISIBLE!="1"} style="display:none"{/if}>
             {menu items=$item.RESULT}

@@ -38,16 +38,16 @@ class mqtt extends module
     function saveParams($data = 0)
     {
         $p = array();
-        if (IsSet($this->id)) {
+        if (isset($this->id)) {
             $p["id"] = $this->id;
         }
-        if (IsSet($this->view_mode)) {
+        if (isset($this->view_mode)) {
             $p["view_mode"] = $this->view_mode;
         }
-        if (IsSet($this->edit_mode)) {
+        if (isset($this->edit_mode)) {
             $p["edit_mode"] = $this->edit_mode;
         }
-        if (IsSet($this->tab)) {
+        if (isset($this->tab)) {
             $p["tab"] = $this->tab;
         }
         return parent::saveParams($p);
@@ -100,10 +100,10 @@ class mqtt extends module
         } else {
             $this->usual($out);
         }
-        if (IsSet($this->owner->action)) {
+        if (isset($this->owner->action)) {
             $out['PARENT_ACTION'] = $this->owner->action;
         }
-        if (IsSet($this->owner->name)) {
+        if (isset($this->owner->name)) {
             $out['PARENT_NAME'] = $this->owner->name;
         }
         $out['VIEW_MODE'] = $this->view_mode;
@@ -111,7 +111,7 @@ class mqtt extends module
         $out['MODE'] = $this->mode;
         $out['ACTION'] = $this->action;
         $out['TAB'] = $this->tab;
-        if (IsSet($this->location_id)) {
+        if (isset($this->location_id)) {
             $out['IS_SET_LOCATION_ID'] = 1;
         }
         if ($this->single_rec) {
@@ -138,16 +138,16 @@ class mqtt extends module
     function pathToTree($array)
     {
         $tree = array();
-        foreach ($array AS $item) {
+        foreach ($array as $item) {
             //$pathIds = explode("/", ltrim($item["PATH"], "/") . '/' . $item["ID"]);
             $pathIds = explode("/", $item["PATH"] . '/' . $item["ID"]);
-            if ($pathIds[0]=='') {
+            if ($pathIds[0] == '') {
                 array_shift($pathIds);
-                $pathIds[0]='/'.$pathIds[0];
+                $pathIds[0] = '/' . $pathIds[0];
             }
             $current = &$tree;
             $cp = '';
-            foreach ($pathIds AS $id) {
+            foreach ($pathIds as $id) {
                 if (!isset($current["CHILDS"][$id])) {
                     $current["CHILDS"][$id] = array('CP' => $cp);
                 }
@@ -157,7 +157,7 @@ class mqtt extends module
                 }
             }
         }
-        return ($this->childsToArray($tree['CHILDS'],''));
+        return ($this->childsToArray($tree['CHILDS'], ''));
     }
 
     function childsToArray($items, $prev_path = '')
@@ -180,45 +180,45 @@ class mqtt extends module
                     $v = $items[0];
                     $v['TITLE'] = $pp . ($v['TITLE'] != '' ? '/' . $v['TITLE'] : '');
                 } else {
-                    $max_updated=0;
-                    $device_title='';
-                    $device_id='';
-                    for($i=0;$i<$total;$i++) {
-                        if ($items[$i]['DEVICE_TITLE']!='' && !$device_title) {
+                    $max_updated = 0;
+                    $device_title = '';
+                    $device_id = '';
+                    for ($i = 0; $i < $total; $i++) {
+                        if ($items[$i]['DEVICE_TITLE'] != '' && !$device_title) {
                             $device_title = $items[$i]['DEVICE_TITLE'];
                         }
-                        if ($items[$i]['DEVICE_ID']!='' && !$device_id) {
+                        if ($items[$i]['DEVICE_ID'] != '' && !$device_id) {
                             $device_id = $items[$i]['DEVICE_ID'];
                         }
                         if ($items[$i]['UPDATED']) {
                             $tm = strtotime($items[$i]['UPDATED']);
                             if (!isset($items[$i]['COLOR'])) {
-                                if ((time()-$tm)<=60*60) {
-                                    $items[$i]['COLOR']='green';
-                                } elseif ((time()-$tm)<=24*60*60) {
-                                    $items[$i]['COLOR']='black';
+                                if ((time() - $tm) <= 60 * 60) {
+                                    $items[$i]['COLOR'] = 'green';
+                                } elseif ((time() - $tm) <= 24 * 60 * 60) {
+                                    $items[$i]['COLOR'] = 'black';
                                 } else {
-                                    $items[$i]['COLOR']='#aaaaaa';
+                                    $items[$i]['COLOR'] = '#aaaaaa';
                                 }
                             }
-                            if ($tm>$max_updated) {
-                                $max_updated=$tm;
+                            if ($tm > $max_updated) {
+                                $max_updated = $tm;
                             }
                         }
                     }
                     if ($device_title) {
-                        $v['DEVICE_TITLE']=$device_title;
+                        $v['DEVICE_TITLE'] = $device_title;
                     }
                     if ($device_id) {
-                        $v['DEVICE_ID']=$device_id;
+                        $v['DEVICE_ID'] = $device_id;
                     }
-                    $v['UPDATED']=date('Y-m-d H:i:s',$max_updated);
-                    if ((time()-$max_updated)<=60*60) {
-                        $v['COLOR']='green';
-                    } elseif ((time()-$max_updated)<=24*60*60) {
-                        $v['COLOR']='black';
+                    $v['UPDATED'] = date('Y-m-d H:i:s', $max_updated);
+                    if ((time() - $max_updated) <= 60 * 60) {
+                        $v['COLOR'] = 'green';
+                    } elseif ((time() - $max_updated) <= 24 * 60 * 60) {
+                        $v['COLOR'] = 'black';
                     } else {
-                        $v['COLOR']='#aaaaaa';
+                        $v['COLOR'] = '#aaaaaa';
                     }
                     $v['RESULT'] = $items;
                 }
@@ -226,16 +226,16 @@ class mqtt extends module
                 unset($v['CHILDS']);
             }
             if ($session->data['branches'][$v['TITLE']]) {
-                $v['IS_VISIBLE']=1;
+                $v['IS_VISIBLE'] = 1;
             }
             if (!$v['PATH']) {
                 if ($prev_path) {
-                    $v['PATH']=$prev_path.'/'.$v['TITLE'];
+                    $v['PATH'] = $prev_path . '/' . $v['TITLE'];
                 } else {
-                    $v['PATH']=$v['TITLE'];
+                    $v['PATH'] = $v['TITLE'];
                 }
             }
-            $v['PATH_URL']=urlencode($v['PATH']);
+            $v['PATH_URL'] = urlencode($v['PATH']);
             $res[] = $v;
         }
         return $res;
@@ -246,24 +246,23 @@ class mqtt extends module
     {
 
         $this->getConfig();
-        if ($write_type==0 && $this->config['MQTT_WRITE_METHOD']) {
-            $write_type=2;
+        if ($write_type == 0 && $this->config['MQTT_WRITE_METHOD']) {
+            $write_type = 2;
         }
 
-        if ($write_type==2) {
-            $data=array('v'=>$value);
+        if ($write_type == 2) {
+            $data = array('v' => $value);
             if ($qos) {
-                $data['q']=$qos;
+                $data['q'] = $qos;
             }
             if ($retain) {
-                $data['r']=$retain;
+                $data['r'] = $retain;
             }
-            addToOperationsQueue('mqtt_queue',$topic,json_encode($data),true);
+            addToOperationsQueue('mqtt_queue', $topic, json_encode($data), true);
             return 1;
         }
 
         include_once(ROOT . "3rdparty/phpmqtt/phpMQTT.php");
-
 
 
         if ($this->config['MQTT_CLIENT']) {//
@@ -359,12 +358,14 @@ class mqtt extends module
      */
     function processMessage($path, $value)
     {
-        $this->getConfig();
         if (preg_match('/\#$/', $path)) {
             return 0;
         }
-        if ($value === false) $value=0;
-        elseif ($value === true) $value=1;
+
+        if ($value === false) $value = 0;
+        elseif ($value === true) $value = 1;
+
+        $this->getConfig();
 
         if (preg_match('/^{/', $value)) {
             $ar = json_decode($value, true);
@@ -396,7 +397,7 @@ class mqtt extends module
             /* New query to search 'PATH_WRITE' record in db */
             $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
 
-            if ($rec['ID']) { /* If path_write found in db */
+            if ($rec['ID']) { /* If path_write foud in db */
                 if ($rec['DISP_FLAG'] != "0") { /* check disp_flag */
                     return 0; /* ignore message if flag checked */
                 }
@@ -414,8 +415,7 @@ class mqtt extends module
             $rec['UPDATED'] = date('Y-m-d H:i:s');
             SQLUpdate('mqtt', $rec);
 
-            if (!$rec['ONLY_NEW_VALUE'] || $rec['VALUE'] <> $old_value)
-            {
+            if (!$rec['ONLY_NEW_VALUE'] || $rec['VALUE'] <> $old_value) {
 
                 /* Update property in linked object if it exist */
                 if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
@@ -434,8 +434,8 @@ class mqtt extends module
                 }
             }
             if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
-             !(strtolower($rec['LINKED_PROPERTY'])=='status' && strtolower($rec['LINKED_METHOD'])=='switch')) {
-                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE'=>$rec['VALUE'],'NEW_VALUE'=>$rec['VALUE'],'OLD_VALUE'=>$old_value));
+                !(strtolower($rec['LINKED_PROPERTY']) == 'status' && strtolower($rec['LINKED_METHOD']) == 'switch')) {
+                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE' => $rec['VALUE'], 'NEW_VALUE' => $rec['VALUE'], 'OLD_VALUE' => $old_value));
             }
 
         }
@@ -460,9 +460,9 @@ class mqtt extends module
                 if (!$status) {
                     unset($session->data['branches'][$branch]);
                 } else {
-                    $session->data['branches'][$branch]=1;
+                    $session->data['branches'][$branch] = 1;
                 }
-                dprint($session,false);
+                dprint($session, false);
                 $session->save();
             }
             exit;
@@ -478,11 +478,7 @@ class mqtt extends module
         $out['MQTT_PORT'] = $this->config['MQTT_PORT'];
         $out['MQTT_QUERY'] = $this->config['MQTT_QUERY'];
         $out['MQTT_WRITE_METHOD'] = (int)$this->config['MQTT_WRITE_METHOD'];
-
         $out['MQTT_STRIPMODE'] = (int)$this->config['MQTT_STRIPMODE'];
-        if (!$out['MQTT_STRIPMODE']) {
-            $out['MQTT_STRIPMODE'] = 0;
-        }
 
         if (!$out['MQTT_HOST']) {
             $out['MQTT_HOST'] = 'localhost';
@@ -508,6 +504,7 @@ class mqtt extends module
             global $mqtt_query;
             global $mqtt_stripmode;
 
+
             $this->config['MQTT_CLIENT'] = trim($mqtt_client);
             $this->config['MQTT_HOST'] = trim($mqtt_host);
             $this->config['MQTT_USERNAME'] = trim($mqtt_username);
@@ -515,8 +512,9 @@ class mqtt extends module
             $this->config['MQTT_AUTH'] = (int)$mqtt_auth;
             $this->config['MQTT_PORT'] = (int)$mqtt_port;
             $this->config['MQTT_QUERY'] = trim($mqtt_query);
-            $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method','int');
+            $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method', 'int');
             $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode','int');
+
             $this->saveConfig();
 
             setGlobal('cycle_mqttControl', 'restart');
@@ -547,15 +545,15 @@ class mqtt extends module
             }
             if ($this->view_mode == 'delete_path') {
                 $this->delete_mqtt_path(gr('path'));
-                $this->redirect("?");
+                $this->redirect(ROOTHTML . "panel/mqtt.html");
             }
             if ($this->view_mode == 'delete_mqtt') {
                 $this->delete_mqtt($this->id);
-                $this->redirect("?");
+                $this->redirect(ROOTHTML . "panel/mqtt.html");
             }
             if ($this->view_mode == 'clear_trash') {
                 $this->clear_trash();
-                $this->redirect("?");
+                $this->redirect(ROOTHTML . "panel/mqtt.html");
             }
         }
     }
@@ -577,12 +575,13 @@ class mqtt extends module
         }
     }
 
-    function api($params) {
+    function api($params)
+    {
         if ($_REQUEST['topic']) {
             $this->processMessage($_REQUEST['topic'], $_REQUEST['msg']);
         }
         if ($params['publish']) {
-            $this->mqttPublish($params['publish'],$params['msg']);
+            $this->mqttPublish($params['publish'], $params['msg']);
         }
     }
 
@@ -605,12 +604,15 @@ class mqtt extends module
             }
             if ($op == 'getvalues') {
                 global $ids;
-                if (!is_array($ids)) {
-                    $ids = array(0);
+                $qry = '1';
+                if (is_array($ids)) {
+                    $qry .= " AND mqtt.ID IN (" . implode(',', $ids) . ")";
+                } elseif ($ids == 'all') {
+                    $qry = '1';
                 } else {
-                    $ids[] = 0;
+                    $qry = 0;
                 }
-                $data = SQLSelect("SELECT ID,VALUE FROM mqtt WHERE ID IN (" . implode(',', $ids) . ")");
+                $data = SQLSelect("SELECT ID,VALUE FROM mqtt WHERE " . $qry);
                 $total = count($data);
                 for ($i = 0; $i < $total; $i++) {
                     $data[$i]['VALUE'] = str_replace('":', '": ', $data[$i]['VALUE']);
@@ -620,7 +622,6 @@ class mqtt extends module
             if ($op == 'send') {
                 $topic = gr('topic');
                 $value = gr('value');
-
             }
             echo json_encode($result);
             exit;
@@ -669,8 +670,8 @@ class mqtt extends module
     function delete_mqtt_path($path)
     {
         if (!$path) return;
-        $records = SQLSelect("SELECT ID FROM mqtt WHERE PATH LIKE '".DBSafe($path)."/%' OR PATH='".DBSafe($path)."'");
-        foreach($records as $rec) {
+        $records = SQLSelect("SELECT ID FROM mqtt WHERE PATH LIKE '" . DBSafe($path) . "/%' OR PATH='" . DBSafe($path) . "'");
+        foreach ($records as $rec) {
             $this->delete_mqtt($rec['ID']);
         }
     }

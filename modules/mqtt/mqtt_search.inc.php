@@ -139,5 +139,3 @@ $out['LOCATIONS'] = SQLSelect("SELECT * FROM locations ORDER BY TITLE");
 
 $out['PATHS'] = SQLSelect("SELECT DISTINCT SUBSTRING_INDEX(CASE SUBSTRING(path,1,1) WHEN '/' THEN SUBSTRING(path,2) ELSE  path END, '/', 1) path FROM mqtt");
 
-
-?>
