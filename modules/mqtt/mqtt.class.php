@@ -163,10 +163,9 @@ class mqtt extends module
     function childsToArray($items, $prev_path = '')
     {
         global $session;
-        //dprint($session->data['branches']);
         $res = array();
         foreach ($items as $k => $v) {
-            if (!$v['PATH']) {
+            if (!isset($v['PATH'])) {
                 $v['TITLE'] = trim($k . ' ' . $v['CP']);
                 $pp = $k;
             } else {
@@ -184,13 +183,13 @@ class mqtt extends module
                     $device_title = '';
                     $device_id = '';
                     for ($i = 0; $i < $total; $i++) {
-                        if ($items[$i]['DEVICE_TITLE'] != '' && !$device_title) {
+                        if (isset($items[$i]['DEVICE_TITLE']) && $items[$i]['DEVICE_TITLE'] != '' && !$device_title) {
                             $device_title = $items[$i]['DEVICE_TITLE'];
                         }
-                        if ($items[$i]['DEVICE_ID'] != '' && !$device_id) {
+                        if (isset($items[$i]['DEVICE_ID']) && $items[$i]['DEVICE_ID'] != '' && !$device_id) {
                             $device_id = $items[$i]['DEVICE_ID'];
                         }
-                        if ($items[$i]['UPDATED']) {
+                        if (isset($items[$i]['UPDATED'])) {
                             $tm = strtotime($items[$i]['UPDATED']);
                             if (!isset($items[$i]['COLOR'])) {
                                 if ((time() - $tm) <= 60 * 60) {
@@ -225,17 +224,17 @@ class mqtt extends module
                 //$v['RESULT'] = $items;
                 unset($v['CHILDS']);
             }
-            if ($session->data['branches'][$v['TITLE']]) {
+            if (isset($session->data['branches'][$v['TITLE']])) {
                 $v['IS_VISIBLE'] = 1;
             }
-            if (!$v['PATH']) {
+            if (!isset($v['PATH'])) {
                 if ($prev_path) {
                     $v['PATH'] = $prev_path . '/' . $v['TITLE'];
                 } else {
                     $v['PATH'] = $v['TITLE'];
                 }
             }
-            $v['PATH_URL'] = urlencode($v['PATH']);
+            $v['PATH_URL'] = urlencode(isset($v['PATH'])?$v['PATH']:'');
             $res[] = $v;
         }
         return $res;
@@ -477,8 +476,8 @@ class mqtt extends module
         $out['MQTT_HOST'] = $this->config['MQTT_HOST'];
         $out['MQTT_PORT'] = $this->config['MQTT_PORT'];
         $out['MQTT_QUERY'] = $this->config['MQTT_QUERY'];
-        $out['MQTT_WRITE_METHOD'] = (int)$this->config['MQTT_WRITE_METHOD'];
-        $out['MQTT_STRIPMODE'] = (int)$this->config['MQTT_STRIPMODE'];
+        $out['MQTT_WRITE_METHOD'] = isset($this->config['MQTT_WRITE_METHOD']) ? (int)$this->config['MQTT_WRITE_METHOD'] : 0;
+        $out['MQTT_STRIPMODE'] = isset($this->config['MQTT_STRIPMODE']) ? $this->config['MQTT_STRIPMODE'] : 0;
 
         if (!$out['MQTT_HOST']) {
             $out['MQTT_HOST'] = 'localhost';
@@ -513,7 +512,7 @@ class mqtt extends module
             $this->config['MQTT_PORT'] = (int)$mqtt_port;
             $this->config['MQTT_QUERY'] = trim($mqtt_query);
             $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method', 'int');
-            $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode','int');
+            $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode', 'int');
 
             $this->saveConfig();
 

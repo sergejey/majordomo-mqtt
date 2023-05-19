@@ -110,14 +110,18 @@
 <ul id="LinkedList1" class="LinkedList" style="padding-left: 0px;">
 {function name=menu}
 {foreach $items as $item}
-    <li style="list-style-type: none; color:{$item.COLOR}" title="{$item.TITLE}" onmouseout="$(this).find('.delIcon_{$item.ID}').hide().removeClass('text-danger');" onmouseover="$(this).find('.delIcon_{$item.ID}').show().addClass('text-danger');">
-        {if $item.RESULT}
+    <li style="list-style-type: none; {if isset($item.COLOR)}color:{$item.COLOR}{/if}"
+        title="{$item.TITLE}"
+        onmouseout="$(this).find('.delIcon_{if isset($item.ID)}{$item.ID}{/if}').hide().removeClass('text-danger');"
+        onmouseover="$(this).find('.delIcon_{if isset($item.ID)}{$item.ID}{/if}').show().addClass('text-danger');">
+        {if isset($item.RESULT)}
         <i class="glyphicon glyphicon-folder-close" style="font-size: 1.2rem;"></i>
         {else}
         <i class="glyphicon glyphicon-arrow-right" style="font-size: 1.2rem;color: #ddd;"></i>
         {/if}
-        {if $item.ID!=""}
-        <a href="#" onclick="return editItem({$item.ID});" title="{$item.PATH}" style="color:{$item.COLOR};text-decoration: none;">
+        {if isset($item.ID)}
+        <a href="#" onclick="return editItem({$item.ID});" title="{$item.PATH}"
+           style="{if isset($item.COLOR)}color:{$item.COLOR};{/if}text-decoration: none;">
          {if $item.TITLE!=""}{$item.TITLE}{else}[..]{/if}
         </a>
         : <span id="mqtt{$item.ID}" class="mqtt_value">{$item.VALUE}</span>
@@ -129,11 +133,11 @@
         {else}
         &nbsp;{$item.TITLE}
         {/if}
-        <span class="device_title" {if $item.IS_VISIBLE=="1"} style="display:none"{/if}>{if $item.DEVICE_TITLE!=""}<span>&mdash;
+        <span class="device_title" {if isset($item.IS_VISIBLE)} style="display:none"{/if}>{if isset($item.DEVICE_TITLE)}<span>&mdash;
         <i><a href="#" onclick="return openDevice({$item.DEVICE_ID})">{$item.DEVICE_TITLE}</a></i></span>{/if}</span>
-        <a href="#" onclick="return deletePath('{$item.PATH_URL}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{$item.ID}"></i></a>
-        {if $item.RESULT}
-        <ul {if $item.IS_VISIBLE!="1"} style="display:none"{/if}>
+        <a href="#" onclick="return deletePath('{$item.PATH_URL}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{if isset($item.ID)}{$item.ID}{/if}"></i></a>
+        {if isset($item.RESULT)}
+        <ul {if !isset($item.IS_VISIBLE)} style="display:none"{/if}>
             {menu items=$item.RESULT}
         </ul>
         {/if}

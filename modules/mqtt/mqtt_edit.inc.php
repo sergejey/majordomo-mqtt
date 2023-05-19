@@ -132,7 +132,7 @@ if ($rec['ID'] && $rec['PATH']) {
         $list_path .= '/' . $word;
         $parent_rec['TITLE'] = $word;
         $parent_tmp = SQLSelectOne("SELECT ID FROM mqtt WHERE PATH='" . DBSafe($list_path) . "'");
-        if ($parent_tmp['ID']) {
+        if (isset($parent_tmp['ID'])) {
             $parent_rec['ID'] = $parent_tmp['ID'];
         }
         $parents[] = $parent_rec;

@@ -46,7 +46,7 @@ if ($location_id) {
     $out['LOCATION_ID'] = (int)$location_id;
 }
 
-if (IsSet($this->location_id)) {
+if (isset($this->location_id)) {
     $location_id = $this->location_id;
     $qry .= " AND LOCATION_ID='" . $this->location_id . "'";
 } else {
@@ -61,11 +61,11 @@ if ($save_qry) {
 }
 if (!$qry) $qry = "1";
 // FIELDS ORDER
-global $sortby_mqtt;
+$sortby_mqtt = gr('sortby_mqtt');
 if (!$sortby_mqtt) {
-    $sortby_mqtt = $session->data['mqtt_sort'];
+    $sortby_mqtt = isset($session->data['mqtt_sort']) ? $session->data['mqtt_sort'] : '';
 } else {
-    if ($session->data['mqtt_sort'] == $sortby_mqtt) {
+    if (isset($session->data['mqtt_sort']) ? $session->data['mqtt_sort'] : '' == $sortby_mqtt) {
         if (Is_Integer(strpos($sortby_mqtt, ' DESC'))) {
             $sortby_mqtt = str_replace(' DESC', '', $sortby_mqtt);
         } else {
@@ -80,9 +80,9 @@ $out['SORTBY'] = $sortby_mqtt;
 
 global $tree;
 if (!isset($tree)) {
-    $tree = (int)$session->data['MQTT_TREE_VIEW'];
+    $tree = isset($session->data['MQTT_TREE_VIEW']) ? (int)$session->data['MQTT_TREE_VIEW'] : 0;
 } else {
-    $session->data['MQTT_TREE_VIEW'] = $tree;
+    $session->data['MQTT_TREE_VIEW'] = (int)$tree;
 }
 
 if (isset($_GET['tree'])) {
@@ -95,6 +95,8 @@ if (isset($_GET['tree'])) {
 
 if ($tree) {
     $out['TREE'] = 1;
+} else {
+    $out['TREE'] = 0;
 }
 
 // SEARCH RESULTS
@@ -115,15 +117,15 @@ if ($res[0]['ID']) {
         if ($res[$i]['TITLE'] == $res[$i]['PATH'] && !$out['TREE']) $res[$i]['PATH'] = '';
         if ($res[$i]['LINKED_OBJECT'] != "") {
             //$object_rec = SQLSelectOne("SELECT objects.DESCRIPTION FROM objects WHERE TITLE='" . DBSafe($res[$i]['LINKED_OBJECT']) . "'");
-            $device_rec=SQLSelectOne("SELECT ID, TITLE FROM devices WHERE LINKED_OBJECT='".DBSafe($res[$i]['LINKED_OBJECT'])."'");
-            if ($device_rec['ID']) {
+            $device_rec = SQLSelectOne("SELECT ID, TITLE FROM devices WHERE LINKED_OBJECT='" . DBSafe($res[$i]['LINKED_OBJECT']) . "'");
+            if (isset($device_rec['ID'])) {
                 //$res[$i]['LINKED_PROPERTY'] .= ' &mdash; ' . $device_rec['TITLE'];
-                $res[$i]['DEVICE_TITLE']= $device_rec['TITLE'];
-                $res[$i]['DEVICE_ID']= $device_rec['ID'];
+                $res[$i]['DEVICE_TITLE'] = $device_rec['TITLE'];
+                $res[$i]['DEVICE_ID'] = $device_rec['ID'];
             }
 
         }
-        if (!$res[$i]['TITLE']) $res[$i]['TITLE']='[..]';
+        if (!$res[$i]['TITLE']) $res[$i]['TITLE'] = '[..]';
     }
     $out['RESULT'] = $res;
 
