@@ -576,12 +576,12 @@ class mqtt extends module
 
     function api($params)
     {
-        if ($_REQUEST['topic']) {
+        if (isset($_REQUEST['topic']) && $_REQUEST['topic']) {
             $this->processMessage($_REQUEST['topic'], $_REQUEST['msg']);
         }
-        if ($params['publish']) {
+        if (isset($params['publish']) && $params['publish']) {
             $this->mqttPublish($params['publish'], $params['msg']);
-        }
+        } 
     }
 
     /**
