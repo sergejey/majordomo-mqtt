@@ -59,15 +59,21 @@ if ($mqtt->config['MQTT_STRIPMODE']) {
     $stripmode = 0;
 }
 
+if (isset($mqtt->config['MQTT_DELAY'])) {
+    $mqtt_delay = $mqtt->config['MQTT_DELAY'];
+} else {
+    $mqtt_delay = 5;
+}
+
 $mqtt_client = new Bluerhinos\phpMQTT($host, $port, $client_name);
 
 if ($mqtt->config['MQTT_AUTH']) {
-        $connect = $mqtt_client->connect(true, NULL, $username, $password);
+    $connect = $mqtt_client->connect(true, NULL, $username, $password);
     if (!$connect) {
         exit(1);
     }
 } else {
-        $connect = $mqtt_client->connect();
+    $connect = $mqtt_client->connect();
     if (!$connect) {
         exit(1);
     }
@@ -91,21 +97,21 @@ $previousMillis = 0;
 while ($mqtt_client->proc()) {
 
 
-    if ($mqtt->config['MQTT_WRITE_METHOD']==2) {
+    if ($mqtt->config['MQTT_WRITE_METHOD'] == 2) {
         $queue = checkOperationsQueue('mqtt_queue');
         foreach ($queue as $mqtt_data) {
-            $topic=$mqtt_data['DATANAME'];
-            $data_value=json_decode($mqtt_data['DATAVALUE'],true);
-            $value=$data_value['v'];
-            $qos=0;
+            $topic = $mqtt_data['DATANAME'];
+            $data_value = json_decode($mqtt_data['DATAVALUE'], true);
+            $value = $data_value['v'];
+            $qos = 0;
             if (isset($data_value['q'])) {
-                $qos=$data_value['q'];
+                $qos = $data_value['q'];
             }
-            $retain=0;
+            $retain = 0;
             if (isset($data_value['r'])) {
-                $retain=$data_value['r'];
+                $retain = $data_value['r'];
             }
-            if ($topic!='') {
+            if ($topic != '') {
                 echo "Publishing to $topic : $value\n";
                 $mqtt_client->publish($topic, $value, $qos, $retain);
             }
@@ -119,9 +125,9 @@ while ($mqtt_client->proc()) {
 
         setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
 
-        if (file_exists('./reboot') || IsSet($_GET['onetime'])) {
+        if (file_exists('./reboot') || isset($_GET['onetime'])) {
 
-                        $mqtt_client->close();
+            $mqtt_client->close();
             $db->Disconnect();
             exit;
         }
@@ -136,23 +142,35 @@ $mqtt_client->close();
  * @param mixed $msg Message
  * @return void
  */
-function procmsg($topic, $msg) {
-    //$url = BASE_URL . '/ajax/mqtt.html?op=process&topic='.urlencode($topic)."&msg=".urlencode($msg);
-    //getURLBackground($url);
+function procmsg($topic, $msg)
+{
+
     if (!isset($topic) || !isset($msg)) return false;
     global $stripmode;
+    global $mqtt_delay;
+    global $mqtt_repeating_cache;
+
+    if ($mqtt_delay > 0 && $mqtt_repeating_cache[$topic]['msg'] == $msg && (time() - $mqtt_repeating_cache[$topic]['received']) <= $mqtt_delay) {
+        // processing cached
+        return false;
+    }
 
     if ($stripmode) {
         $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` like '$topic%' and LINKED_OBJECT>''");
-        if(!$rec['ID']) {
+        if (!$rec['ID']) {
             echo date("Y-m-d H:i:s") . " Ignore received from {$topic} : $msg\n";
             return false;
         }
     }
 
     echo date("Y-m-d H:i:s") . " Received from {$topic} : $msg\n";
+
+    if ($mqtt_delay > 0) {
+        $mqtt_repeating_cache[$topic] = array('msg' => $msg, 'received' => time());
+    }
+
     if (function_exists('callAPI')) {
-        callAPI('/api/module/mqtt','GET',array('topic'=>$topic,'msg'=>$msg));
+        callAPI('/api/module/mqtt', 'GET', array('topic' => $topic, 'msg' => $msg));
     } else {
         global $mqtt;
         $mqtt->processMessage($topic, $msg);

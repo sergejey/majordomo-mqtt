@@ -409,12 +409,13 @@ class mqtt extends module
             $rec['UPDATED'] = date('Y-m-d H:i:s');
             SQLInsert('mqtt', $rec);
         } else {
-            /* Update values in db */
-            $rec['VALUE'] = $value . '';
-            $rec['UPDATED'] = date('Y-m-d H:i:s');
-            SQLUpdate('mqtt', $rec);
 
             if (!$rec['ONLY_NEW_VALUE'] || $rec['VALUE'] <> $old_value) {
+
+                /* Update values in db */
+                $rec['VALUE'] = $value . '';
+                $rec['UPDATED'] = date('Y-m-d H:i:s');
+                SQLUpdate('mqtt', $rec);
 
                 /* Update property in linked object if it exist */
                 if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
@@ -431,11 +432,14 @@ class mqtt extends module
                     }
                     setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array('mqtt' => '0'));
                 }
+
+                if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
+                    !(strtolower($rec['LINKED_PROPERTY']) == 'status' && strtolower($rec['LINKED_METHOD']) == 'switch')) {
+                    callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE' => $rec['VALUE'], 'NEW_VALUE' => $rec['VALUE'], 'OLD_VALUE' => $old_value));
+                }
+
             }
-            if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
-                !(strtolower($rec['LINKED_PROPERTY']) == 'status' && strtolower($rec['LINKED_METHOD']) == 'switch')) {
-                callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE' => $rec['VALUE'], 'NEW_VALUE' => $rec['VALUE'], 'OLD_VALUE' => $old_value));
-            }
+
 
         }
     }
@@ -476,6 +480,7 @@ class mqtt extends module
         $out['MQTT_HOST'] = $this->config['MQTT_HOST'];
         $out['MQTT_PORT'] = $this->config['MQTT_PORT'];
         $out['MQTT_QUERY'] = $this->config['MQTT_QUERY'];
+        $out['MQTT_DELAY'] = $this->config['MQTT_DELAY'];
         $out['MQTT_WRITE_METHOD'] = isset($this->config['MQTT_WRITE_METHOD']) ? (int)$this->config['MQTT_WRITE_METHOD'] : 0;
         $out['MQTT_STRIPMODE'] = isset($this->config['MQTT_STRIPMODE']) ? $this->config['MQTT_STRIPMODE'] : 0;
 
@@ -494,25 +499,23 @@ class mqtt extends module
         $out['MQTT_AUTH'] = $this->config['MQTT_AUTH'];
 
         if ($this->view_mode == 'update_settings') {
-            global $mqtt_client;
-            global $mqtt_host;
-            global $mqtt_username;
-            global $mqtt_password;
-            global $mqtt_auth;
-            global $mqtt_port;
-            global $mqtt_query;
-            global $mqtt_stripmode;
 
-
-            $this->config['MQTT_CLIENT'] = trim($mqtt_client);
-            $this->config['MQTT_HOST'] = trim($mqtt_host);
-            $this->config['MQTT_USERNAME'] = trim($mqtt_username);
-            $this->config['MQTT_PASSWORD'] = trim($mqtt_password);
-            $this->config['MQTT_AUTH'] = (int)$mqtt_auth;
-            $this->config['MQTT_PORT'] = (int)$mqtt_port;
-            $this->config['MQTT_QUERY'] = trim($mqtt_query);
+            $this->config['MQTT_CLIENT'] = gr('mqtt_client');
+            $this->config['MQTT_HOST'] = gr('mqtt_host');
+            $this->config['MQTT_USERNAME'] = gr('mqtt_username');
+            $this->config['MQTT_PASSWORD'] = gr('mqtt_password');
+            $this->config['MQTT_AUTH'] = gr('mqtt_auth','int');
+            $this->config['MQTT_PORT'] = gr('mqtt_port','int');
+            $this->config['MQTT_QUERY'] = gr('mqtt_query');
             $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method', 'int');
             $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode', 'int');
+
+            $mqtt_delay = gr('mqtt_delay');
+            if ($mqtt_delay === '') {
+                unset($this->config['MQTT_DELAY']);
+            } else {
+                $this->config['MQTT_DELAY'] = (int)$mqtt_delay;
+            }
 
             $this->saveConfig();
 
