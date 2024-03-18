@@ -234,7 +234,7 @@ class mqtt extends module
                     $v['PATH'] = $v['TITLE'];
                 }
             }
-            $v['PATH_URL'] = urlencode(isset($v['PATH'])?$v['PATH']:'');
+            $v['PATH_URL'] = urlencode(isset($v['PATH']) ? $v['PATH'] : '');
             $res[] = $v;
         }
         return $res;
@@ -410,7 +410,7 @@ class mqtt extends module
             SQLInsert('mqtt', $rec);
         } else {
 
-            if (!$rec['ONLY_NEW_VALUE'] || $rec['VALUE'] <> $old_value) {
+            if (!$rec['ONLY_NEW_VALUE'] || ($value <> $old_value)) {
 
                 /* Update values in db */
                 $rec['VALUE'] = $value . '';
@@ -504,8 +504,8 @@ class mqtt extends module
             $this->config['MQTT_HOST'] = gr('mqtt_host');
             $this->config['MQTT_USERNAME'] = gr('mqtt_username');
             $this->config['MQTT_PASSWORD'] = gr('mqtt_password');
-            $this->config['MQTT_AUTH'] = gr('mqtt_auth','int');
-            $this->config['MQTT_PORT'] = gr('mqtt_port','int');
+            $this->config['MQTT_AUTH'] = gr('mqtt_auth', 'int');
+            $this->config['MQTT_PORT'] = gr('mqtt_port', 'int');
             $this->config['MQTT_QUERY'] = gr('mqtt_query');
             $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method', 'int');
             $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode', 'int');
@@ -584,7 +584,7 @@ class mqtt extends module
         }
         if (isset($params['publish']) && $params['publish']) {
             $this->mqttPublish($params['publish'], $params['msg']);
-        } 
+        }
     }
 
     /**
