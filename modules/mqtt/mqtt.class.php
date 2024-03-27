@@ -311,6 +311,10 @@ class mqtt extends module
             return 0;
         }
 
+        if ($rec['ONLY_NEW_VALUE'] && $rec['VALUE'] == $value) {
+            return 0;
+        }
+
 
         if ($rec['REPLACE_LIST'] != '') {
             $list = explode(',', $rec['REPLACE_LIST']);
