@@ -6,70 +6,41 @@ if ($this->owner->name == 'panel') {
     $out['CONTROLPANEL'] = 1;
 }
 $table_name = 'mqtt';
-$rec = SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
+$rec = SQLSelectOne("SELECT * FROM $table_name WHERE ID=".(int)$id);
 if ($this->mode == 'update') {
     $ok = 1;
-    //updating 'TITLE' (varchar, required)
-    /*
-    global $title;
-    $rec['TITLE'] = $title;
-    if ($rec['TITLE'] == '') {
-        $out['ERR_TITLE'] = 1;
-        $ok = 0;
-    }
-    */
     //updating 'LOCATION_ID' (select)
     if (IsSet($this->location_id)) {
         $rec['LOCATION_ID'] = $this->location_id;
     } else {
-        global $location_id;
+        $location_id = gr('location_id','int');
         if ($location_id != "")
             $rec['LOCATION_ID'] = $location_id;
     }
     //updating 'PATH' (varchar, required)
-    global $path;
-    $rec['PATH'] = $path;
+    $rec['PATH'] = gr('path');
     if ($rec['PATH'] == '') {
         $out['ERR_PATH'] = 1;
         $ok = 0;
     }
     $rec['TITLE']=$rec['PATH'];
-
-    global $path_write;
-    $rec['PATH_WRITE'] = trim($path_write);
-
-    global $disp_flag;
-    $rec['DISP_FLAG'] = (int)$disp_flag;
-
-    global $qos;
-    $rec['QOS'] = (int)$qos;
-
-    global $retain;
-    $rec['RETAIN'] = (int)$retain;
-
-    $rec['REPLACE_LIST'] = trim(gr('replace_list'));
+    $rec['PATH_WRITE'] = gr('path_write');
+    $rec['DISP_FLAG'] = gr('disp_flag','int');
+    $rec['QOS'] = gr('qos','int');
+    $rec['RETAIN'] = gr('retain','int');
+    $rec['REPLACE_LIST'] = gr('replace_list');
 
     $old_linked_object = $rec['LINKED_OBJECT'];
     $old_linked_property = $rec['LINKED_PROPERTY'];
     $old_linked_method = $rec['LINKED_METHOD'];
 
-
-    //updating 'LINKED_OBJECT' (varchar)
-    global $linked_object;
-    if (is_null ($linked_object)) { $rec['LINKED_OBJECT'] = ''; }
-    else { $rec['LINKED_OBJECT'] = $linked_object; }
-    //updating 'LINKED_PROPERTY' (varchar)
-    global $linked_property;
-    if (is_null ($linked_property)) { $rec['LINKED_PROPERTY'] = ''; }
-    else { $rec['LINKED_PROPERTY'] = $linked_property; }
-    //updating 'LINKED_METHOD' (varchar)
-    global $linked_method;
-    if (is_null ($linked_method)) { $rec['LINKED_METHOD'] = ''; }
-    else { $rec['LINKED_METHOD'] = $linked_method; }
+    $rec['LINKED_OBJECT'] = gr('linked_object');
+    $rec['LINKED_PROPERTY'] = gr('linked_property');
+    $rec['LINKED_METHOD'] = gr('linked_method');
 
     $rec['READONLY']=gr('readonly','int');
-    
     $rec['ONLY_NEW_VALUE']=gr('only_new_value','int');
+    $rec['LOGGING']=gr('logging','int');
     $rec['WRITE_TYPE']=gr('write_type','int');
 
     //UPDATING RECORD
@@ -87,7 +58,6 @@ if ($this->mode == 'update') {
         if ($old_linked_object && $old_linked_object != $rec['LINKED_OBJECT'] && $old_linked_property && $old_linked_property != $rec['LINKED_PROPERTY']) {
             removeLinkedProperty($old_linked_object, $old_linked_property, $this->name);
         }
-
         $out['OK'] = 1;
     } else {
         $out['ERR'] = 1;

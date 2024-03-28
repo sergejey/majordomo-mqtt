@@ -317,6 +317,9 @@ class mqtt extends module
                 $pair = trim($pair);
                 list($new, $old) = explode('=', $pair);
                 if ($value == $old) {
+                    if ($rec['LOGGING']) {
+                        DebMes("Replacing \"$value\" to \"$new\"", 'mqtt_topic_' . $rec['ID']);
+                    }
                     $value = $new;
                     break;
                 }
@@ -331,11 +334,20 @@ class mqtt extends module
             if (preg_match('/^http:/', $rec['PATH_WRITE'])) {
                 $url = $rec['PATH_WRITE'];
                 $url = str_replace('%VALUE%', $value, $url);
+                if ($rec['LOGGING']) {
+                    DebMes("Publishing \"$value\" to url $url", 'mqtt_topic_' . $rec['ID']);
+                }
                 getURL($url, 0);
             } else {
+                if ($rec['LOGGING']) {
+                    DebMes("Publishing \"$value\" to write-path " . $rec['PATH_WRITE'], 'mqtt_topic_' . $rec['ID']);
+                }
                 $this->mqttPublish($rec['PATH_WRITE'], $value, (int)$rec['QOS'], (int)$rec['RETAIN'], (int)$rec['WRITE_TYPE']);
             }
         } else {
+            if ($rec['LOGGING']) {
+                DebMes("Publishing \"$value\" to " . $rec['PATH'], 'mqtt_topic_' . $rec['ID']);
+            }
             $this->mqttPublish($rec['PATH'], $value, (int)$rec['QOS'], (int)$rec['RETAIN'], (int)$rec['WRITE_TYPE']);
         }
         //$mqtt_client->close();
@@ -346,6 +358,9 @@ class mqtt extends module
 
 
         if ($set_linked && $rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
+            if ($rec['LOGGING']) {
+                DebMes("Setting " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"$value\"", 'mqtt_topic_' . $rec['ID']);
+            }
             setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array($this->name => '0'));
         }
 
@@ -413,6 +428,10 @@ class mqtt extends module
             SQLInsert('mqtt', $rec);
         } else {
 
+            if ($rec['LOGGING']) {
+                DebMes("Received \"$value\" from " . $path, 'mqtt_topic_' . $rec['ID']);
+            }
+
             if (!$rec['ONLY_NEW_VALUE'] || ($value <> $old_value)) {
 
                 /* Update values in db */
@@ -428,19 +447,32 @@ class mqtt extends module
                             $pair = trim($pair);
                             list($new, $old) = explode('=', $pair);
                             if ($value == $new) {
+                                if ($rec['LOGGING']) {
+                                    DebMes("Replacing \"$value\" with \"$old\"", 'mqtt_topic_' . $rec['ID']);
+                                }
                                 $value = $old;
                                 break;
                             }
                         }
+                    }
+                    if ($rec['LOGGING']) {
+                        DebMes("Setting property " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"" . $value . "\"", 'mqtt_topic_' . $rec['ID']);
                     }
                     setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array('mqtt' => '0'));
                 }
 
                 if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
                     !(strtolower($rec['LINKED_PROPERTY']) == 'status' && strtolower($rec['LINKED_METHOD']) == 'switch')) {
+                    if ($rec['LOGGING']) {
+                        DebMes("Calling method " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], 'mqtt_topic_' . $rec['ID']);
+                    }
                     callMethod($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_METHOD'], array('VALUE' => $rec['VALUE'], 'NEW_VALUE' => $rec['VALUE'], 'OLD_VALUE' => $old_value));
                 }
 
+            } else {
+                if ($rec['LOGGING']) {
+                    DebMes("Ignoring \"$value\" (already existing)", 'mqtt_topic_' . $rec['ID']);
+                }
             }
 
 
@@ -656,10 +688,13 @@ class mqtt extends module
 
     function propertySetHandle($object, $property, $value)
     {
-        $mqtt_properties = SQLSelect("SELECT ID FROM mqtt WHERE READONLY=0 AND LINKED_OBJECT LIKE '" . DBSafe($object) . "' AND LINKED_PROPERTY LIKE '" . DBSafe($property) . "'");
+        $mqtt_properties = SQLSelect("SELECT ID, LOGGING FROM mqtt WHERE READONLY=0 AND LINKED_OBJECT LIKE '" . DBSafe($object) . "' AND LINKED_PROPERTY LIKE '" . DBSafe($property) . "'");
         $total = count($mqtt_properties);
         if ($total) {
             for ($i = 0; $i < $total; $i++) {
+                if ($mqtt_properties[$i]['LOGGING']) {
+                    DebMes("Linked property (" . $object . "." . $property . ") updated to \"" . $value . '"', 'mqtt_topic_' . $mqtt_properties[$i]['ID']);
+                }
                 $this->setProperty($mqtt_properties[$i]['ID'], $value);
             }
         }
@@ -743,6 +778,7 @@ class mqtt extends module
  mqtt: READONLY int(3) NOT NULL DEFAULT '0'
  mqtt: WRITE_TYPE int(3) NOT NULL DEFAULT '0'
  mqtt: ONLY_NEW_VALUE int(3) NOT NULL DEFAULT '0'
+ mqtt: LOGGING int(3) NOT NULL DEFAULT '0'
 EOD;
         parent::dbInstall($data);
     }
