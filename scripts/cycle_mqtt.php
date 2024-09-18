@@ -150,7 +150,7 @@ function procmsg($topic, $msg)
     global $mqtt_delay;
     global $mqtt_repeating_cache;
 
-    if ($mqtt_delay > 0 && $mqtt_repeating_cache[$topic]['msg'] == $msg && (time() - $mqtt_repeating_cache[$topic]['received']) <= $mqtt_delay) {
+    if ($mqtt_delay > 0 && isset($mqtt_repeating_cache[$topic]['msg']) && $mqtt_repeating_cache[$topic]['msg'] == $msg && (time() - $mqtt_repeating_cache[$topic]['received']) <= $mqtt_delay) {
         // processing cached
         return false;
     }
