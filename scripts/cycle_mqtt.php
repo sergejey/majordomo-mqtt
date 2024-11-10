@@ -157,7 +157,8 @@ function procmsg($topic, $msg)
 
     if ($stripmode) {
         $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` like '$topic%' and LINKED_OBJECT>''");
-        if (!$rec['ID']) {
+        //if (!$rec['ID']) {
+        if (empty($rec['ID'])) {
             echo date("Y-m-d H:i:s") . " Ignore received from {$topic} : $msg\n";
             return false;
         }
