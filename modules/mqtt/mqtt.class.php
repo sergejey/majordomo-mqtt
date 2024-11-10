@@ -391,7 +391,8 @@ class mqtt extends module
                     $v = json_encode($v);
                 if ($this->config['MQTT_STRIPMODE']) {
                     $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` LIKE '$path/$k%' and LINKED_OBJECT>''");
-                    if (!$rec['ID']) {
+                    //if (!$rec['ID']) {
+                    if (empty($rec['ID'])) {
                         continue;
                     }
                 }
