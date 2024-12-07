@@ -305,6 +305,9 @@ class mqtt extends module
      */
     function setProperty($id, $value, $set_linked = 0)
     {
+
+        $original_value = $value;
+
         $rec = SQLSelectOne("SELECT * FROM mqtt WHERE ID='" . $id . "'");
 
         if (!$rec['ID'] || !$rec['PATH']) {
@@ -330,7 +333,9 @@ class mqtt extends module
             return 0;
         }
 
+        $topic = $rec['PATH'];
         if ($rec['PATH_WRITE']) {
+            $topic = $rec['PATH_WRITE'];
             if (preg_match('/^http:/', $rec['PATH_WRITE'])) {
                 $url = $rec['PATH_WRITE'];
                 $url = str_replace('%VALUE%', $value, $url);
@@ -350,7 +355,6 @@ class mqtt extends module
             }
             $this->mqttPublish($rec['PATH'], $value, (int)$rec['QOS'], (int)$rec['RETAIN'], (int)$rec['WRITE_TYPE']);
         }
-        //$mqtt_client->close();
 
         $rec['VALUE'] = $value . '';
         $rec['UPDATED'] = date('Y-m-d H:i:s');
@@ -358,10 +362,30 @@ class mqtt extends module
 
 
         if ($set_linked && $rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
-            if ($rec['LOGGING']) {
-                DebMes("Setting " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"$value\"", 'mqtt_topic_' . $rec['ID']);
+            $currentValue = getGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY']);
+            if ($currentValue != $value) {
+                if ($rec['LOGGING']) {
+                    DebMes("Setting " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"$value\"", 'mqtt_topic_' . $rec['ID']);
+                }
+                setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array($this->name => '0'));
             }
-            setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array($this->name => '0'));
+        }
+
+        if ($rec['LOGGING'] || (isset($this->config['DEBUG_MODE']) && $this->config['DEBUG_MODE'])) {
+            $hist = array();
+            $hist['MQTT_ID'] = $rec['ID'];
+            $hist['DESTINATION'] = 1;
+            $hist['TOPIC'] = $topic;
+            $hist['DATA_PAYLOAD'] = $original_value;
+            $hist['VALUE'] = $value;
+            $hist['UPDATED'] = date('Y-m-d H:i:s');
+            SQLInsert('mqtt_history', $hist);
+
+            $keep_total = 20;
+            $tmp = SQLSelect("SELECT ID FROM mqtt_history WHERE MQTT_ID=" . $hist['MQTT_ID'] . " ORDER BY ID DESC LIMIT $keep_total");
+            if (count($tmp) == $keep_total) {
+                SQLExec("DELETE FROM mqtt_history WHERE MQTT_ID=" . $hist['MQTT_ID'] . " AND ID<" . $tmp[$keep_total - 1]['ID']);
+            }
         }
 
     }
@@ -379,6 +403,8 @@ class mqtt extends module
             return 0;
         }
 
+        $original_value = $value;
+
         if ($value === false) $value = 0;
         elseif ($value === true) $value = 1;
 
@@ -391,7 +417,6 @@ class mqtt extends module
                     $v = json_encode($v);
                 if ($this->config['MQTT_STRIPMODE']) {
                     $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` LIKE '$path/$k%' and LINKED_OBJECT>''");
-                    //if (!$rec['ID']) {
                     if (empty($rec['ID'])) {
                         continue;
                     }
@@ -440,22 +465,41 @@ class mqtt extends module
                 $rec['UPDATED'] = date('Y-m-d H:i:s');
                 SQLUpdate('mqtt', $rec);
 
-                /* Update property in linked object if it exist */
-                if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
-                    if ($rec['REPLACE_LIST'] != '') {
-                        $list = explode(',', $rec['REPLACE_LIST']);
-                        foreach ($list as $pair) {
-                            $pair = trim($pair);
-                            list($new, $old) = explode('=', $pair);
-                            if ($value == $new) {
-                                if ($rec['LOGGING']) {
-                                    DebMes("Replacing \"$value\" with \"$old\"", 'mqtt_topic_' . $rec['ID']);
-                                }
-                                $value = $old;
-                                break;
+                if ($rec['REPLACE_LIST'] != '') {
+                    $list = explode(',', $rec['REPLACE_LIST']);
+                    foreach ($list as $pair) {
+                        $pair = trim($pair);
+                        list($new, $old) = explode('=', $pair);
+                        if ($value == $new) {
+                            if ($rec['LOGGING']) {
+                                DebMes("Replacing \"$value\" with \"$old\"", 'mqtt_topic_' . $rec['ID']);
                             }
+                            $value = $old;
+                            break;
                         }
                     }
+                }
+
+                if ($rec['LOGGING'] || (isset($this->config['DEBUG_MODE']) && $this->config['DEBUG_MODE'])) {
+                    $hist = array();
+                    $hist['MQTT_ID'] = $rec['ID'];
+                    $hist['DESTINATION'] = 0;
+                    $hist['TOPIC'] = $path;
+                    $hist['DATA_PAYLOAD'] = $original_value;
+                    $hist['VALUE'] = $value;
+                    $hist['UPDATED'] = date('Y-m-d H:i:s');
+                    SQLInsert('mqtt_history', $hist);
+
+                    $keep_total = 20;
+                    $tmp = SQLSelect("SELECT ID FROM mqtt_history WHERE MQTT_ID=" . $hist['MQTT_ID'] . " ORDER BY ID DESC LIMIT $keep_total");
+                    if (count($tmp) == $keep_total) {
+                        SQLExec("DELETE FROM mqtt_history WHERE MQTT_ID=" . $hist['MQTT_ID'] . " AND ID<" . $tmp[$keep_total - 1]['ID']);
+                    }
+                }
+
+
+                /* Update property in linked object if it exist */
+                if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
                     if ($rec['LOGGING']) {
                         DebMes("Setting property " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"" . $value . "\"", 'mqtt_topic_' . $rec['ID']);
                     }
@@ -519,6 +563,7 @@ class mqtt extends module
         $out['MQTT_DELAY'] = $this->config['MQTT_DELAY'];
         $out['MQTT_WRITE_METHOD'] = isset($this->config['MQTT_WRITE_METHOD']) ? (int)$this->config['MQTT_WRITE_METHOD'] : 0;
         $out['MQTT_STRIPMODE'] = isset($this->config['MQTT_STRIPMODE']) ? $this->config['MQTT_STRIPMODE'] : 0;
+        $out['DEBUG_MODE'] = $this->config['DEBUG_MODE'];
 
         if (!$out['MQTT_HOST']) {
             $out['MQTT_HOST'] = 'localhost';
@@ -545,6 +590,11 @@ class mqtt extends module
             $this->config['MQTT_QUERY'] = gr('mqtt_query');
             $this->config['MQTT_WRITE_METHOD'] = gr('mqtt_write_method', 'int');
             $this->config['MQTT_STRIPMODE'] = gr('mqtt_stripmode', 'int');
+            $this->config['DEBUG_MODE'] = gr('debug_mode', 'int');
+
+            if (!$this->config['DEBUG_MODE']) {
+                SQLExec("TRUNCATE mqtt_history;");
+            }
 
             $mqtt_delay = gr('mqtt_delay');
             if ($mqtt_delay === '') {
@@ -656,7 +706,35 @@ class mqtt extends module
                     $data[$i]['VALUE'] = str_replace('":', '": ', $data[$i]['VALUE']);
                 }
                 $result['DATA'] = $data;
+
+                $history = SQLSelect("SELECT mqtt_history.* FROM mqtt_history LEFT JOIN mqtt ON mqtt_history.MQTT_ID=mqtt.ID WHERE $qry ORDER BY mqtt_history.UPDATED DESC, mqtt_history.ID DESC LIMIT 20");
+                $total = count($history);
+                for ($i = 0; $i < $total; $i++) {
+                    $result['HISTORY'] .= "<div>";
+                    if ($history[$i]['DESTINATION'] == 1) {
+                        $result['HISTORY'] .= '<i class="glyphicon glyphicon-export" style="color:blue"></i> ';
+                    } else {
+                        $result['HISTORY'] .= '<i class="glyphicon glyphicon-import" style="color:green"></i> ';
+                    }
+
+                    $updated_tm = strtotime($history[$i]['UPDATED']);
+                    $diff_str = getPassedText($updated_tm);
+
+                    $result['HISTORY'] .= $diff_str . ' ';
+                    $result['HISTORY'] .= "<br/><small>";
+                    $result['HISTORY'] .= "<a href='#' onclick='return editItem(" . $history[$i]['MQTT_ID'] . ");'>" . $history[$i]['TOPIC'] . "</a><br/>";
+                    if ($history[$i]['DESTINATION'] == 1) {
+                        //out
+                        $result['HISTORY'] .= '<b>' . $history[$i]['VALUE'] . '</b> &xrarr; ' . htmlspecialchars($history[$i]['DATA_PAYLOAD']) . "<br/>";
+                    } else {
+                        //in
+                        $result['HISTORY'] .= '' . htmlspecialchars($history[$i]['DATA_PAYLOAD']) . ' &xrarr; <b>' . $history[$i]['VALUE'] . "</b><br/>";
+                    }
+                    $result['HISTORY'] .= "</small></div>&nbsp;";
+
+                }
             }
+
             if ($op == 'send') {
                 $topic = gr('topic');
                 $value = gr('value');
@@ -780,6 +858,15 @@ class mqtt extends module
  mqtt: WRITE_TYPE int(3) NOT NULL DEFAULT '0'
  mqtt: ONLY_NEW_VALUE int(3) NOT NULL DEFAULT '0'
  mqtt: LOGGING int(3) NOT NULL DEFAULT '0'
+ 
+ mqtt_history: ID int(10) unsigned NOT NULL auto_increment
+ mqtt_history: MQTT_ID int(10) NOT NULL DEFAULT '0'
+ mqtt_history: DESTINATION int(3) NOT NULL DEFAULT '0'
+ mqtt_history: TOPIC varchar(255) NOT NULL DEFAULT ''
+ mqtt_history: VALUE varchar(255) NOT NULL DEFAULT ''
+ mqtt_history: DATA_PAYLOAD text
+ mqtt_history: UPDATED datetime 
+ 
 EOD;
         parent::dbInstall($data);
     }

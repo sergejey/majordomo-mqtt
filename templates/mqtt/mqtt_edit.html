@@ -1,21 +1,23 @@
-[#if OK#]
-<div class="alert alert-success">
-	<#LANG_DATA_SAVED#>
-</div>
-[#endif OK#]
-[#if ERR#]
-<div class="alert alert-danger">
-	<#LANG_FILLOUT_REQURED#>
-</div>
-[#endif ERR#]
+<div class="row">
+	<div class="col-md-8">
+		[#if OK#]
+		<div class="alert alert-success">
+			<#LANG_DATA_SAVED#>
+		</div>
+		[#endif OK#]
+		[#if ERR#]
+		<div class="alert alert-danger">
+			<#LANG_FILLOUT_REQURED#>
+		</div>
+		[#endif ERR#]
 
 		<script>
-		$(window).load(function() {
-			//Вставляем данные в бредкрумбс
-			$('.breadcrumb:eq(0)').append('<li style="color: gray;">[#TITLE#]</li>');
-		});
+			$(window).load(function() {
+				//Вставляем данные в бредкрумбс
+				$('.breadcrumb:eq(0)').append('<li style="color: gray;">[#TITLE#]</li>');
+			});
 		</script>
-        <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
+		<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal" style="border: 1px solid #f2f2f2;padding: 10px;border-radius: 5px;">
 			<div class="form-group [#if ERR_PATH#]has-error[#endif#]">
 				<label class="col-lg-2 col-md-4"><#LANG_PATH#>: *</label>
 				<div class="col-lg-10 col-md-8">
@@ -44,39 +46,32 @@
 					<select name="location_id" class="form-control input">
 						<option value="">select</option>
 						[#begin LOCATION_ID_OPTIONS#]
-							<option value="[#ID#]" [#if SELECTED#] selected[#endif#]>[#TITLE#]</option>
+						<option value="[#ID#]" [#if SELECTED#] selected[#endif#]>[#TITLE#]</option>
 						[#end LOCATION_ID_OPTIONS#]
 					</select>
 				</div>
 			</div>
 			[#endif IS_SET_LOCATION_ID#]
 			<div class="form-group ">
-				<label class="col-lg-2 col-md-4">Hide write path in list: </label>
-				<div class="col-lg-10 col-md-8">
-					<input type="hidden" name="disp_flag" value="0"> <!-- value for unchecked checkbox -->
-                    <input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1" #]checked[#endif#]>
-				</div>
-			</div>
-			<div class="form-group ">
 				<label class="col-lg-2 col-md-4"><#LANG_READ_ONLY#>: </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="radio" name="readonly" value="1" [#if READONLY="1" #] checked[#endif#]> <#LANG_YES#>
-                    <input type="radio" name="readonly" value="0" [#if READONLY!="1" #] checked[#endif#]> <#LANG_NO#>
+					<input type="radio" name="readonly" value="0" [#if READONLY!="1" #] checked[#endif#]> <#LANG_NO#>
 				</div>
 			</div>
 			<div class="form-group ">
 				<label class="col-lg-2 col-md-4">QoS: </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="radio" name="qos" value="0" [#if QOS="0" #] checked[#endif#]> 0
-                    <input type="radio" name="qos" value="1" [#if QOS="1" #] checked[#endif#]> 1
-                    <input type="radio" name="qos" value="2" [#if QOS="2" #] checked[#endif#]> 2
+					<input type="radio" name="qos" value="1" [#if QOS="1" #] checked[#endif#]> 1
+					<input type="radio" name="qos" value="2" [#if QOS="2" #] checked[#endif#]> 2
 				</div>
 			</div>
 			<div class="form-group ">
 				<label class="col-lg-2 col-md-4">Retain: </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="radio" name="retain" value="1" [#if RETAIN="1" #] checked[#endif#]> <#LANG_YES#>
-                    <input type="radio" name="retain" value="0" [#if RETAIN!="1" #] checked[#endif#]> <#LANG_NO#>
+					<input type="radio" name="retain" value="0" [#if RETAIN!="1" #] checked[#endif#]> <#LANG_NO#>
 				</div>
 			</div>
 			[#if ID!=""#]
@@ -126,8 +121,8 @@
 				</div>
 			</div>
 			[#module name="linkedobject" object_field="linked_object" property_field="linked_property" method_field="linked_method" width="100%"#]
-			
-			
+
+
 			<div class="form-group ">
 				<label class="col-lg-2 col-md-4">Replace list: </label>
 				<div class="col-lg-10 col-md-8">
@@ -135,46 +130,51 @@
 				</div>
 			</div>
 			<div class="form-group ">
-				<div class="col-lg-10 col-md-8">
 					<input type="checkbox" name="only_new_value" value="1" [#if ONLY_NEW_VALUE="1" #]checked[#endif#]>
 					Update value only if changed
-				</div>
-				<div class="col-lg-10 col-md-8">
+			</div>
+    		<div class="form-group ">
 					<input type="checkbox" name="logging" value="1" [#if LOGGING="1" #]checked[#endif#]>
 					Turn on detailed logging for the topic
-				</div>
 			</div>
+
+			<div class="form-group ">
+				<input type="checkbox" name="disp_flag" value="1" [#if DISP_FLAG="1" #]checked[#endif#]>
+				Hide write path in list
+			</div>
+
+
 			<div class="form-group">
-				<div class="col-md-12 text-center">
+				<div class="col-md-12">
 					[#if ID!=""#]
-                    <button class="btn btn-default btn-success" type="submit" name="subm">
+					<button class="btn btn-default btn-success" type="submit" name="subm">
 						<i class="glyphicon glyphicon-floppy-saved"></i><#LANG_SUBMIT#>
-                    </button>
-                    [#else ID#]
-                    <button class="btn btn-default btn-success" type="submit" name="subm">
+					</button>
+					[#else ID#]
+					<button class="btn btn-default btn-success" type="submit" name="subm">
 						<i class="glyphicon glyphicon-floppy-saved"></i>
-                        <#LANG_ADD#>
-                    </button>
-                    [#endif ID#]
-                    <a href="?" class="btn btn-warning">
+						<#LANG_ADD#>
+					</button>
+					[#endif ID#]
+					<a href="?" class="btn btn-warning">
 						<i class="glyphicon glyphicon-floppy-remove"></i>
-                        <#LANG_CANCEL#>
-                    </a>
+						<#LANG_CANCEL#>
+					</a>
 
-                    [#if ID!=""#]
-                    <a href="?view_mode=delete_mqtt&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-danger" title="<#LANG_DELETE#>">
-                        <i class="glyphicon glyphicon-remove"></i>
+					[#if ID!=""#]
+					<a href="?view_mode=delete_mqtt&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-danger" title="<#LANG_DELETE#>">
+						<i class="glyphicon glyphicon-remove"></i>
 						<#LANG_DELETE#>
-                    </a>
-                    [#endif#]
+					</a>
+					[#endif#]
 
-                    <input type="hidden" name="id" value="<#ID#>">
-                    <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
-                    <input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
-                    <input type="hidden" name="mode" value="update">
+					<input type="hidden" name="id" value="<#ID#>">
+					<input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
+					<input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
+					<input type="hidden" name="mode" value="update">
 				</div>
 			</div>
-        </form>
+		</form>
 
 		[#if CHILDS#]
 		<div class="table-responsive table-bordered table-striped tableXray " style="margin-top: 10px;">
@@ -189,15 +189,7 @@
 			</table>
 		</div>
 		[#endif CHILDS#]
-
-
-<!---
-<div>
- <a href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
-[#begin PARENTS#]
- /
- [#if ID!=""#]<a href="?view_mode=edit_mqtt&id=[#ID#]">[#TITLE#]</a>[#else ID#][#TITLE#][#endif ID#]
-
-[#end PARENTS#]
+	</div>
+	<div class="col-md-4" id="history">[#HISTORY#]</div>
 </div>
---->
+

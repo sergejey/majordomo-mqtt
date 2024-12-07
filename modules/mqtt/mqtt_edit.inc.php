@@ -5,6 +5,7 @@
 if ($this->owner->name == 'panel') {
     $out['CONTROLPANEL'] = 1;
 }
+
 $table_name = 'mqtt';
 $rec = SQLSelectOne("SELECT * FROM $table_name WHERE ID=".(int)$id);
 if ($this->mode == 'update') {
@@ -90,6 +91,7 @@ if (is_array($rec)) {
     }
 }
 outHash($rec, $out);
+
 
 if ($rec['ID'] && $rec['PATH']) {
 

@@ -89,6 +89,14 @@
                                 </div>
                         </div>
 
+                        <div class="form-group">
+                                <label class="control-label">
+                                        Debug mode (extra logging):
+                                </label>
+                                <input type="radio" name="debug_mode" value="1"[#if DEBUG_MODE="1"#] checked[#endif#]> <#LANG_YES#>
+                                <input type="radio" name="debug_mode" value="0"[#if DEBUG_MODE!="1"#] checked[#endif#]> <#LANG_NO#>
+                        </div>
+
                         <div class="form-group " style="margin-right: 0px;margin-left: 0px;">
                                 <label class="col-lg-2 col-md-4" style="max-width: 240px;float: left;padding: 5px 10px 0px 0px;text-align: right;">
                                         Write method (<#LANG_DEFAULT#>): <span style="color:red">*</span>

@@ -107,49 +107,56 @@
 </script>
 
 {if $RESULT}
-<ul id="LinkedList1" class="LinkedList" style="padding-left: 0px;">
-{function name=menu}
-{foreach $items as $item}
-    <li style="list-style-type: none; {if isset($item.COLOR)}color:{$item.COLOR}{/if}"
-        title="{$item.TITLE}"
-        onmouseout="$(this).find('.delIcon_{if isset($item.ID)}{$item.ID}{/if}').hide().removeClass('text-danger');"
-        onmouseover="$(this).find('.delIcon_{if isset($item.ID)}{$item.ID}{/if}').show().addClass('text-danger');">
-        {if isset($item.RESULT)}
-        <i class="glyphicon glyphicon-folder-close" style="font-size: 1.2rem;"></i>
-        {else}
-        <i class="glyphicon glyphicon-arrow-right" style="font-size: 1.2rem;color: #ddd;"></i>
-        {/if}
-        {if isset($item.ID)}
-        <a href="#" onclick="return editItem({$item.ID});" title="{$item.PATH}"
-           style="{if isset($item.COLOR)}color:{$item.COLOR};{/if}text-decoration: none;">
-         {if $item.TITLE!=""}{$item.TITLE}{else}[..]{/if}
-        </a>
-        : <span id="mqtt{$item.ID}" class="mqtt_value">{$item.VALUE}</span>
-        {if $item.LINKED_OBJECT!=""}
-            <i>
-                ({if $item.LINKED_PROPERTY==""}M: {$item.LINKED_OBJECT}.{$item.LINKED_METHOD}{else}P: {$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY}{/if})
-            </i>
-        {/if}
-        {else}
-        &nbsp;{$item.TITLE}
-        {/if}
-        <span class="device_title" {if isset($item.IS_VISIBLE)} style="display:none"{/if}>{if isset($item.DEVICE_TITLE)}<span>&mdash;
+
+<div class="row">
+    <div class="col-md-8">
+        <ul id="LinkedList1" class="LinkedList" style="padding-left: 0px;">
+            {function name=menu}
+                {foreach $items as $item}
+                    <li style="list-style-type: none; {if isset($item.COLOR)}color:{$item.COLOR}{/if}"
+                        title="{$item.TITLE}"
+                        onmouseout="$(this).find('.delIcon_{if isset($item.ID)}{$item.ID}{/if}').hide().removeClass('text-danger');"
+                        onmouseover="$(this).find('.delIcon_{if isset($item.ID)}{$item.ID}{/if}').show().addClass('text-danger');">
+                        {if isset($item.RESULT)}
+                            <i class="glyphicon glyphicon-folder-close" style="font-size: 1.2rem;"></i>
+                        {else}
+                            <i class="glyphicon glyphicon-arrow-right" style="font-size: 1.2rem;color: #ddd;"></i>
+                        {/if}
+                        {if isset($item.ID)}
+                            <a href="#" onclick="return editItem({$item.ID});" title="{$item.PATH}"
+                               style="{if isset($item.COLOR)}color:{$item.COLOR};{/if}text-decoration: none;">
+                                {if $item.TITLE!=""}{$item.TITLE}{else}[..]{/if}
+                            </a>
+                            : <span id="mqtt{$item.ID}" class="mqtt_value">{$item.VALUE}</span>
+                            {if $item.LINKED_OBJECT!=""}
+                                <i>
+                                    ({if $item.LINKED_PROPERTY==""}M: {$item.LINKED_OBJECT}.{$item.LINKED_METHOD}{else}P: {$item.LINKED_OBJECT}.{$item.LINKED_PROPERTY}{/if})
+                                </i>
+                            {/if}
+                        {else}
+                            &nbsp;{$item.TITLE}
+                        {/if}
+                        <span class="device_title" {if isset($item.IS_VISIBLE)} style="display:none"{/if}>{if isset($item.DEVICE_TITLE)}<span>&mdash;
         <i><a href="#" onclick="return openDevice({$item.DEVICE_ID})">{$item.DEVICE_TITLE}</a></i></span>{/if}</span>
-        <a href="#" onclick="return deletePath('{$item.PATH_URL}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{if isset($item.ID)}{$item.ID}{/if}"></i></a>
-        {if isset($item.RESULT)}
-        <ul {if !isset($item.IS_VISIBLE)} style="display:none"{/if}>
-            {menu items=$item.RESULT}
+                        <a href="#" onclick="return deletePath('{$item.PATH_URL}');"><i style="display: none;" class="glyphicon glyphicon-remove delIcon_{if isset($item.ID)}{$item.ID}{/if}"></i></a>
+                        {if isset($item.RESULT)}
+                            <ul {if !isset($item.IS_VISIBLE)} style="display:none"{/if}>
+                                {menu items=$item.RESULT}
+                            </ul>
+                        {/if}
+
+                    </li>
+
+                {/foreach}
+
+            {/function}
+            {menu items=$RESULT}
+
         </ul>
-        {/if}
+    </div>
+    <div class="col-md-4" id="history"></div>
+</div>
 
-    </li>
-
-{/foreach}
-
-{/function}
-{menu items=$RESULT}
-
-</ul>
 {/if}
 
 <script type="text/JavaScript">
