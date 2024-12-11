@@ -59,6 +59,11 @@ if ($this->mode == 'update') {
         if ($old_linked_object && $old_linked_object != $rec['LINKED_OBJECT'] && $old_linked_property && $old_linked_property != $rec['LINKED_PROPERTY']) {
             removeLinkedProperty($old_linked_object, $old_linked_property, $this->name);
         }
+
+        if ($rec['PATH_WRITE']!='' && $rec['PATH_WRITE']!=$rec['PATH']) {
+            SQLExec("DELETE FROM mqtt WHERE PATH='".DBSafe($rec['PATH_WRITE'])."'");
+        }
+
         $out['OK'] = 1;
     } else {
         $out['ERR'] = 1;

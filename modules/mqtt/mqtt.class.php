@@ -376,9 +376,12 @@ class mqtt extends module
             $hist['MQTT_ID'] = $rec['ID'];
             $hist['DESTINATION'] = 1;
             $hist['TOPIC'] = $topic;
-            $hist['DATA_PAYLOAD'] = $original_value;
-            $hist['VALUE'] = $value;
+            $hist['DATA_PAYLOAD'] = $value;
+            $hist['VALUE'] = $original_value;
             $hist['UPDATED'] = date('Y-m-d H:i:s');
+            if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
+                $hist['LINKED_DATA'] = $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'];
+            }
             SQLInsert('mqtt_history', $hist);
 
             $keep_total = 20;
@@ -432,19 +435,17 @@ class mqtt extends module
             $value = json_decode('"' . $value . '"');
         }
 
+        /* New query to search 'PATH_WRITE' record in db */
+        $write_rec = SQLSelectOne("SELECT ID FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
+        if (isset($write_rec['ID'])) { /* If path_write foud in db */
+            return false;
+        }
+
         /* Search 'PATH' in database (db) */
         $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH = '" . DBSafe($path) . "'");
         $old_value = $rec['VALUE'];
 
         if (!$rec['ID']) { /* If 'PATH' not found in db */
-            /* New query to search 'PATH_WRITE' record in db */
-            $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
-
-            if ($rec['ID']) { /* If path_write foud in db */
-                if ($rec['DISP_FLAG'] != "0") { /* check disp_flag */
-                    return 0; /* ignore message if flag checked */
-                }
-            }
             /* Insert new record in db */
             $rec = array();
             $rec['PATH'] = $path;
@@ -488,6 +489,9 @@ class mqtt extends module
                     $hist['DATA_PAYLOAD'] = $original_value;
                     $hist['VALUE'] = $value;
                     $hist['UPDATED'] = date('Y-m-d H:i:s');
+                    if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
+                        $hist['LINKED_DATA'] = $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'];
+                    }
                     SQLInsert('mqtt_history', $hist);
 
                     $keep_total = 20;
@@ -725,10 +729,12 @@ class mqtt extends module
                     $result['HISTORY'] .= "<a href='#' onclick='return editItem(" . $history[$i]['MQTT_ID'] . ");'>" . $history[$i]['TOPIC'] . "</a><br/>";
                     if ($history[$i]['DESTINATION'] == 1) {
                         //out
-                        $result['HISTORY'] .= '<b>' . $history[$i]['VALUE'] . '</b> &xrarr; ' . htmlspecialchars($history[$i]['DATA_PAYLOAD']) . "<br/>";
+                        if ($history[$i]['LINKED_DATA'] != '') $result['HISTORY'] .= $history[$i]['LINKED_DATA'] . ' = ';
+                        $result['HISTORY'] .= '<b>' . $history[$i]['VALUE'] . '</b> &xrarr; ' . htmlspecialchars($history[$i]['DATA_PAYLOAD']);
                     } else {
                         //in
-                        $result['HISTORY'] .= '' . htmlspecialchars($history[$i]['DATA_PAYLOAD']) . ' &xrarr; <b>' . $history[$i]['VALUE'] . "</b><br/>";
+                        $result['HISTORY'] .= '' . htmlspecialchars($history[$i]['DATA_PAYLOAD']) . ' &xrarr; <b>' . $history[$i]['VALUE'] . "</b>";
+                        if ($history[$i]['LINKED_DATA'] != '') $result['HISTORY'] .= ' &xrarr; ' . $history[$i]['LINKED_DATA'];
                     }
                     $result['HISTORY'] .= "</small></div>&nbsp;";
 
@@ -812,6 +818,13 @@ class mqtt extends module
     function install($data = '')
     {
         parent::install();
+
+        $write_paths = SQLSelect("SELECT PATH_WRITE FROM mqtt WHERE PATH_WRITE != ''");
+        $total = count($write_paths);
+        for ($i = 0; $i < $total; $i++) {
+            SQLExec("DELETE FROM mqtt WHERE PATH='" . DBSafe($write_paths[$i]['PATH_WRITE']) . "'");
+        }
+
     }
 
     /**
@@ -864,6 +877,7 @@ class mqtt extends module
  mqtt_history: DESTINATION int(3) NOT NULL DEFAULT '0'
  mqtt_history: TOPIC varchar(255) NOT NULL DEFAULT ''
  mqtt_history: VALUE varchar(255) NOT NULL DEFAULT ''
+ mqtt_history: LINKED_DATA varchar(255) NOT NULL DEFAULT ''
  mqtt_history: DATA_PAYLOAD text
  mqtt_history: UPDATED datetime 
  
