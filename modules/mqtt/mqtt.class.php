@@ -310,6 +310,7 @@ class mqtt extends module
 
         $rec = SQLSelectOne("SELECT * FROM mqtt WHERE ID='" . $id . "'");
 
+
         if (!$rec['ID'] || !$rec['PATH']) {
             return 0;
         }
@@ -329,7 +330,25 @@ class mqtt extends module
             }
         }
 
+        $topic = $rec['PATH'];
+        if ($rec['PATH_WRITE']) {
+            $topic = $rec['PATH_WRITE'];
+        }
+
         if ($rec['ONLY_NEW_VALUE'] && $rec['VALUE'] == $value) {
+            if ($rec['LOGGING']) {
+                DebMes("Ignoring \"$value\" = \"" . $rec['VALUE'] . "\"", 'mqtt_topic_' . $rec['ID']);
+            }
+            if ($rec['LOGGING'] || (isset($this->config['DEBUG_MODE']) && $this->config['DEBUG_MODE'])) {
+                $hist = array();
+                $hist['MQTT_ID'] = $rec['ID'];
+                $hist['DESTINATION'] = 1;
+                $hist['TOPIC'] = $topic;
+                $hist['DATA_PAYLOAD'] = $value;
+                $hist['VALUE'] = $original_value;
+                $hist['UPDATED'] = date('Y-m-d H:i:s');
+                SQLInsert('mqtt_history', $hist);
+            }
             return 0;
         }
 
@@ -365,9 +384,9 @@ class mqtt extends module
             $currentValue = getGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY']);
             if ($currentValue != $value) {
                 if ($rec['LOGGING']) {
-                    DebMes("Setting " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"$value\"", 'mqtt_topic_' . $rec['ID']);
+                    DebMes("Setting " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"$original_value\"", 'mqtt_topic_' . $rec['ID']);
                 }
-                setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array($this->name => '0'));
+                setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $original_value, array($this->name => '0'));
             }
         }
 
@@ -521,6 +540,16 @@ class mqtt extends module
             } else {
                 if ($rec['LOGGING']) {
                     DebMes("Ignoring \"$value\" (already existing)", 'mqtt_topic_' . $rec['ID']);
+                }
+                if ($rec['LOGGING'] || (isset($this->config['DEBUG_MODE']) && $this->config['DEBUG_MODE'])) {
+                    $hist = array();
+                    $hist['MQTT_ID'] = $rec['ID'];
+                    $hist['DESTINATION'] = 0;
+                    $hist['TOPIC'] = $path;
+                    $hist['DATA_PAYLOAD'] = $original_value;
+                    $hist['VALUE'] = $value;
+                    $hist['UPDATED'] = date('Y-m-d H:i:s');
+                    SQLInsert('mqtt_history', $hist);
                 }
             }
 

@@ -72,8 +72,6 @@ if ($this->mode == 'update') {
     global $new_value;
     global $set_new_value;
     if ((int)$set_new_value) {
-        $rec['VALUE'] = $new_value;
-        SQLUpdate('mqtt', $rec);
         $this->setProperty($rec['ID'], $new_value, 1);
     }
 
