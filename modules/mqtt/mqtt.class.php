@@ -243,7 +243,7 @@ class mqtt extends module
 
     function mqttPublish($topic, $value, $qos = 0, $retain = 0, $write_type = 0)
     {
-
+        startMeasure('mqttPublish');
         $this->getConfig();
         if ($write_type == 0 && $this->config['MQTT_WRITE_METHOD']) {
             $write_type = 2;
@@ -258,6 +258,7 @@ class mqtt extends module
                 $data['r'] = $retain;
             }
             addToOperationsQueue('mqtt_queue', $topic, json_encode($data), true);
+            endMeasure('mqttPublish');
             return 1;
         }
 
@@ -288,12 +289,19 @@ class mqtt extends module
         $mqtt_client = new Bluerhinos\phpMQTT($host, $port, $client_name . ' Client');
 
         if (!$mqtt_client->connect(true, NULL, $username, $password)) {
+            DebMes("Error connecting with '$value' to $topic",'mqtt_error');
+            endMeasure('mqttPublish');
             return 0;
         }
 
-        $mqtt_client->publish($topic, $value, $qos, $retain);
-
+        $result = $mqtt_client->publish($topic, $value, $qos, $retain);
         $mqtt_client->close();
+        endMeasure('mqttPublish');
+        if (!$result) {
+            DebMes("Error writing '$value' to $topic",'mqtt_error');
+            return 0;
+        }
+
     }
 
     /**
@@ -447,6 +455,8 @@ class mqtt extends module
             }
         }
 
+        startMeasure('mqttProcessMessage');
+
         if (preg_match("/^\\\\u\\d+/", $path)) {
             $path = json_decode('"' . $path . '"');
         }
@@ -457,6 +467,7 @@ class mqtt extends module
         /* New query to search 'PATH_WRITE' record in db */
         $write_rec = SQLSelectOne("SELECT ID FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
         if (isset($write_rec['ID'])) { /* If path_write foud in db */
+            endMeasure('mqttProcessMessage');
             return false;
         }
 
@@ -552,9 +563,8 @@ class mqtt extends module
                     SQLInsert('mqtt_history', $hist);
                 }
             }
-
-
         }
+        endMeasure('mqttProcessMessage');
     }
 
     /**
@@ -753,7 +763,7 @@ class mqtt extends module
                     $updated_tm = strtotime($history[$i]['UPDATED']);
                     $diff_str = getPassedText($updated_tm);
 
-                    $result['HISTORY'] .= $diff_str . ' ';
+                    $result['HISTORY'] .= '<span title="'.$history[$i]['UPDATED'].'">'.$diff_str . '</span> ';
                     $result['HISTORY'] .= "<br/><small>";
                     $result['HISTORY'] .= "<a href='#' onclick='return editItem(" . $history[$i]['MQTT_ID'] . ");'>" . $history[$i]['TOPIC'] . "</a><br/>";
                     if ($history[$i]['DESTINATION'] == 1) {
