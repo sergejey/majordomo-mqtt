@@ -405,6 +405,9 @@ class mqtt extends module
             $hist['TOPIC'] = $topic;
             $hist['DATA_PAYLOAD'] = $value;
             $hist['VALUE'] = $original_value;
+            if (mb_strlen($hist['VALUE'])>255) {
+                $hist['VALUE']='[Data too large]';
+            }
             $hist['UPDATED'] = date('Y-m-d H:i:s');
             if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
                 $hist['LINKED_DATA'] = $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'];
@@ -518,6 +521,9 @@ class mqtt extends module
                     $hist['TOPIC'] = $path;
                     $hist['DATA_PAYLOAD'] = $original_value;
                     $hist['VALUE'] = $value;
+                    if (mb_strlen($hist['VALUE'])>255) {
+                        $hist['VALUE'] = '[Data too large]';
+                    }
                     $hist['UPDATED'] = date('Y-m-d H:i:s');
                     if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
                         $hist['LINKED_DATA'] = $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'];
