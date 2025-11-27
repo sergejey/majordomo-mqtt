@@ -443,7 +443,7 @@ class mqtt extends module
 
         $this->getConfig();
 
-        if (preg_match('/^{/', $value)) {
+        if (substr($value, 0, 1) == '{') {
             $ar = json_decode($value, true);
             foreach ($ar as $k => $v) {
                 if (is_array($v))
@@ -903,8 +903,8 @@ class mqtt extends module
  mqtt: LOCATION_ID int(10) NOT NULL DEFAULT '0'
  mqtt: UPDATED datetime
  mqtt: VALUE varchar(1024) NOT NULL DEFAULT ''
- mqtt: PATH varchar(255) NOT NULL DEFAULT ''
- mqtt: PATH_WRITE varchar(255) NOT NULL DEFAULT ''
+ mqtt: PATH varchar(6000) NOT NULL DEFAULT ''
+ mqtt: PATH_WRITE varchar(6000) NOT NULL DEFAULT ''
  mqtt: REPLACE_LIST varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_OBJECT varchar(255) NOT NULL DEFAULT ''
  mqtt: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT ''
@@ -916,6 +916,8 @@ class mqtt extends module
  mqtt: WRITE_TYPE int(3) NOT NULL DEFAULT '0'
  mqtt: ONLY_NEW_VALUE int(3) NOT NULL DEFAULT '0'
  mqtt: LOGGING int(3) NOT NULL DEFAULT '0'
+ mqtt: INDEX (PATH)
+ mqtt: INDEX (PATH_WRITE)
  
  mqtt_history: ID int(10) unsigned NOT NULL auto_increment
  mqtt_history: MQTT_ID int(10) NOT NULL DEFAULT '0'
