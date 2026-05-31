@@ -13,6 +13,12 @@
 //
 class mqtt extends module
 {
+    protected $lookup_cache_ttl = 15;
+    protected $lookup_cache_updated = 0;
+    protected $lookup_by_path = array();
+    protected $lookup_write_paths = array();
+    protected $lookup_linked_paths = array();
+    protected $setglobal_supports_source = null;
     /**
      * mqtt
      *
@@ -133,6 +139,94 @@ class mqtt extends module
                  PRIMARY KEY (`ID`)
                ) ENGINE = MEMORY DEFAULT CHARSET=utf8;";
         SQLExec($sqlQuery);
+    }
+
+    function invalidateLookupCache()
+    {
+        $this->lookup_cache_updated = 0;
+        $this->lookup_by_path = array();
+        $this->lookup_write_paths = array();
+        $this->lookup_linked_paths = array();
+    }
+
+    function refreshLookupCache($force = false)
+    {
+        if (!$force && $this->lookup_cache_updated && (time() - $this->lookup_cache_updated) < $this->lookup_cache_ttl) {
+            return;
+        }
+        $this->lookup_by_path = array();
+        $this->lookup_write_paths = array();
+        $this->lookup_linked_paths = array();
+        $rows = SQLSelect("SELECT * FROM mqtt");
+        foreach ($rows as $row) {
+            if ($row['PATH'] !== '') {
+                $this->lookup_by_path[$row['PATH']] = $row;
+                if ($row['LINKED_OBJECT'] != '') {
+                    $this->lookup_linked_paths[] = $row['PATH'];
+                }
+            }
+            if ($row['PATH_WRITE'] !== '') {
+                $this->lookup_write_paths[$row['PATH_WRITE']] = 1;
+            }
+        }
+        $this->lookup_cache_updated = time();
+    }
+
+    function isPathWriteTopic($path)
+    {
+        $this->refreshLookupCache();
+        return isset($this->lookup_write_paths[$path]);
+    }
+
+    function getRecordByPath($path)
+    {
+        $this->refreshLookupCache();
+        if (isset($this->lookup_by_path[$path])) {
+            return $this->lookup_by_path[$path];
+        }
+        return array();
+    }
+
+    function hasLinkedPathWithPrefix($topic_prefix)
+    {
+        $this->refreshLookupCache();
+        foreach ($this->lookup_linked_paths as $linked_path) {
+            if (strpos($linked_path, $topic_prefix) === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function buildIncomingSource($topic, $msg)
+    {
+        return '/api.php/module/mqtt?topic=' . urlencode($topic) . '&msg=' . urlencode($msg) . '&no_session=1';
+    }
+
+    function setLinkedPropertyFromMqtt($object, $property, $value, $source_url)
+    {
+        if ($this->setglobal_supports_source === null) {
+            $this->setglobal_supports_source = false;
+            if (function_exists('setGlobal') && class_exists('ReflectionFunction')) {
+                $rf = new ReflectionFunction('setGlobal');
+                $this->setglobal_supports_source = ($rf->getNumberOfParameters() >= 4);
+            }
+        }
+
+        if ($this->setglobal_supports_source) {
+            setGlobal($object . '.' . $property, $value, array('mqtt' => '0'), $source_url);
+            return;
+        }
+
+        $has_request_uri = isset($_SERVER['REQUEST_URI']);
+        $old_request_uri = $has_request_uri ? $_SERVER['REQUEST_URI'] : '';
+        $_SERVER['REQUEST_URI'] = $source_url;
+        setGlobal($object . '.' . $property, $value, array('mqtt' => '0'));
+        if ($has_request_uri) {
+            $_SERVER['REQUEST_URI'] = $old_request_uri;
+        } else {
+            unset($_SERVER['REQUEST_URI']);
+        }
     }
 
     function pathToTree($array)
@@ -273,6 +367,8 @@ class mqtt extends module
             $client_name = "MajorDoMo MQTT";
         }
 
+        $username = '';
+        $password = '';
         if ($this->config['MQTT_AUTH']) {
             $username = $this->config['MQTT_USERNAME'];
             $password = $this->config['MQTT_PASSWORD'];
@@ -369,10 +465,7 @@ class mqtt extends module
             }
         }
 
-        $topic = $rec['PATH'];
-        if ($rec['PATH_WRITE']) {
-            $topic = $rec['PATH_WRITE'];
-        }
+        $topic = $rec['PATH_WRITE'] ? $rec['PATH_WRITE'] : $rec['PATH'];
 
         if ($rec['ONLY_NEW_VALUE'] && $rec['VALUE'] == $value) {
             if ($rec['LOGGING']) {
@@ -462,6 +555,7 @@ class mqtt extends module
         }
 
         $original_value = $value;
+        $source_url = $this->buildIncomingSource($path, $original_value);
 
         if ($value === false) $value = 0;
         elseif ($value === true) $value = 1;
@@ -470,16 +564,19 @@ class mqtt extends module
 
         if (substr($value, 0, 1) == '{') {
             $ar = json_decode($value, true);
-            foreach ($ar as $k => $v) {
-                if (is_array($v))
-                    $v = json_encode($v);
-                if ($this->config['MQTT_STRIPMODE']) {
-                    $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` LIKE '$path/$k%' and LINKED_OBJECT>''");
-                    if (empty($rec['ID'])) {
-                        continue;
+            if (is_array($ar)) {
+                foreach ($ar as $k => $v) {
+                    if (is_array($v)) {
+                        $v = json_encode($v);
                     }
+                    if ($this->config['MQTT_STRIPMODE']) {
+                        $rec = SQLSelectOne("SELECT ID FROM `mqtt` where `PATH` LIKE '$path/$k%' and LINKED_OBJECT>''");
+                        if (empty($rec['ID'])) {
+                            continue;
+                        }
+                    }
+                    $this->processMessage($path . '/' . $k, $v);
                 }
-                $this->processMessage($path . '/' . $k, $v);
             }
         }
 
@@ -493,14 +590,13 @@ class mqtt extends module
         }
 
         /* New query to search 'PATH_WRITE' record in db */
-        $write_rec = SQLSelectOne("SELECT ID FROM mqtt WHERE PATH_WRITE = '" . DBSafe($path) . "'");
-        if (isset($write_rec['ID'])) { /* If path_write foud in db */
+        if ($this->isPathWriteTopic($path)) { /* If path_write found in db */
             endMeasure('mqttProcessMessage');
             return false;
         }
 
         /* Search 'PATH' in database (db) */
-        $rec = SQLSelectOne("SELECT * FROM mqtt WHERE PATH = '" . DBSafe($path) . "'");
+        $rec = $this->getRecordByPath($path);
         $old_value = $rec['VALUE'];
 
         if (!$rec['ID']) { /* If 'PATH' not found in db */
@@ -514,6 +610,7 @@ class mqtt extends module
             }
             $rec['UPDATED'] = date('Y-m-d H:i:s');
             SQLInsert('mqtt', $rec);
+            $this->invalidateLookupCache();
         } else {
 
             if ($rec['LOGGING']) {
@@ -529,6 +626,7 @@ class mqtt extends module
                 }
                 $rec['UPDATED'] = date('Y-m-d H:i:s');
                 SQLUpdate('mqtt', $rec);
+                $this->lookup_by_path[$path] = $rec;
 
                 if ($rec['REPLACE_LIST'] != '') {
                     $list = explode(',', $rec['REPLACE_LIST']);
@@ -568,7 +666,7 @@ class mqtt extends module
                     if ($rec['LOGGING']) {
                         DebMes("Setting property " . $rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'] . " to \"" . $value . "\"", 'mqtt_topic_' . $rec['ID']);
                     }
-                    setGlobal($rec['LINKED_OBJECT'] . '.' . $rec['LINKED_PROPERTY'], $value, array('mqtt' => '0'));
+                    $this->setLinkedPropertyFromMqtt($rec['LINKED_OBJECT'], $rec['LINKED_PROPERTY'], $value, $source_url);
                 }
 
                 if ($rec['LINKED_OBJECT'] && $rec['LINKED_METHOD'] &&
@@ -744,6 +842,7 @@ class mqtt extends module
         $list_path = '';
         $breadcrumbs = '';
         foreach ($tmp as $word) {
+            $parent_rec = array('ID' => 0);
             if ($word == '') {
                 $list_path .= '/';
                 continue;
@@ -797,6 +896,7 @@ class mqtt extends module
                 $this->delete_mqtt($res[$i]['ID']);
             }
         }
+        $this->invalidateLookupCache();
     }
 
     function api($params)
@@ -936,6 +1036,7 @@ class mqtt extends module
         foreach ($records as $rec) {
             $this->delete_mqtt($rec['ID']);
         }
+        $this->invalidateLookupCache();
     }
 
     function delete_mqtt($id)
@@ -943,6 +1044,7 @@ class mqtt extends module
         $rec = SQLSelectOne("SELECT * FROM mqtt WHERE ID='$id'");
         // some action for related tables
         SQLExec("DELETE FROM mqtt WHERE ID='" . $rec['ID'] . "'");
+        $this->invalidateLookupCache();
     }
 
     function processSubscription($event, &$details)
@@ -970,6 +1072,7 @@ class mqtt extends module
         for ($i = 0; $i < $total; $i++) {
             SQLExec("DELETE FROM mqtt WHERE PATH='" . DBSafe($write_paths[$i]['PATH_WRITE']) . "'");
         }
+        $this->invalidateLookupCache();
 
     }
 

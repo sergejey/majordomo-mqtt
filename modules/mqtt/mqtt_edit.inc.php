@@ -45,13 +45,14 @@ if ($this->mode == 'update') {
     $rec['WRITE_TYPE'] = gr('write_type', 'int');
 
     //UPDATING RECORD
-    if ($ok) {
-        if ($rec['ID']) {
-            SQLUpdate($table_name, $rec); // update
-        } else {
-            $new_rec = 1;
-            $rec['ID'] = SQLInsert($table_name, $rec); // adding new record
-        }
+        if ($ok) {
+            if ($rec['ID']) {
+                SQLUpdate($table_name, $rec); // update
+            } else {
+                $new_rec = 1;
+                $rec['ID'] = SQLInsert($table_name, $rec); // adding new record
+            }
+            $this->invalidateLookupCache();
 
         if ($rec['LINKED_OBJECT'] && $rec['LINKED_PROPERTY']) {
             addLinkedProperty($rec['LINKED_OBJECT'], $rec['LINKED_PROPERTY'], $this->name);
@@ -62,6 +63,7 @@ if ($this->mode == 'update') {
 
         if ($rec['PATH_WRITE'] != '' && $rec['PATH_WRITE'] != $rec['PATH']) {
             SQLExec("DELETE FROM mqtt WHERE PATH='" . DBSafe($rec['PATH_WRITE']) . "'");
+            $this->invalidateLookupCache();
         }
 
         $out['OK'] = 1;
