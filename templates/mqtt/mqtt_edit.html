@@ -31,11 +31,11 @@
 				</div>
 			</div>
 			<div class="form-group ">
-				<label class="col-lg-2 col-md-4">Write method: </label>
+				<label class="col-lg-2 col-md-4"><#LANG_MQTT_WRITE_METHOD#> </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="radio" name="write_type" value="0" [#if WRITE_TYPE="0"#] checked[#endif#]> <#LANG_DEFAULT#>
-					<input type="radio" name="write_type" value="1" [#if WRITE_TYPE="1"#] checked[#endif#]> Instant (new connection)
-					<input type="radio" name="write_type" value="2" [#if WRITE_TYPE="2"#] checked[#endif#]> Queue
+					<input type="radio" name="write_type" value="1" [#if WRITE_TYPE="1"#] checked[#endif#]> <#LANG_MQTT_INSTANT#>
+					<input type="radio" name="write_type" value="2" [#if WRITE_TYPE="2"#] checked[#endif#]> <#LANG_MQTT_QUEUE#>
 
 				</div>
 			</div>
@@ -44,7 +44,7 @@
 				<label class="col-lg-2 col-md-4"><#LANG_LOCATION#>: </label>
 				<div class="col-lg-10 col-md-8">
 					<select name="location_id" class="form-control input">
-						<option value="">select</option>
+						<option value=""><#LANG_MQTT_SELECT#></option>
 						[#begin LOCATION_ID_OPTIONS#]
 						<option value="[#ID#]" [#if SELECTED#] selected[#endif#]>[#TITLE#]</option>
 						[#end LOCATION_ID_OPTIONS#]
@@ -60,7 +60,7 @@
 				</div>
 			</div>
 			<div class="form-group ">
-				<label class="col-lg-2 col-md-4">QoS: </label>
+				<label class="col-lg-2 col-md-4"><#LANG_MQTT_QOS#> </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="radio" name="qos" value="0" [#if QOS="0" #] checked[#endif#]> 0
 					<input type="radio" name="qos" value="1" [#if QOS="1" #] checked[#endif#]> 1
@@ -68,7 +68,7 @@
 				</div>
 			</div>
 			<div class="form-group ">
-				<label class="col-lg-2 col-md-4">Retain: </label>
+				<label class="col-lg-2 col-md-4"><#LANG_MQTT_RETAIN#> </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="radio" name="retain" value="1" [#if RETAIN="1" #] checked[#endif#]> <#LANG_YES#>
 					<input type="radio" name="retain" value="0" [#if RETAIN!="1" #] checked[#endif#]> <#LANG_NO#>
@@ -124,7 +124,7 @@
 
 
 			<div class="form-group ">
-				<label class="col-lg-2 col-md-4">Replace list: </label>
+				<label class="col-lg-2 col-md-4"><#LANG_MQTT_REPLACE_LIST#> </label>
 				<div class="col-lg-10 col-md-8">
 					<input type="text" name="replace_list" id="replace_list" value="[#REPLACE_LIST#]" class="input form-control">
 				</div>
