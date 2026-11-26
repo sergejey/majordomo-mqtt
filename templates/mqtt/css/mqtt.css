@@ -1,0 +1,35 @@
+/* Responsive styles for MQTT module (2026) */
+:root {
+  --mqtt-card-bg: var(--mj-color-surface, #f5f5f5);
+  --mqtt-card-fg: var(--mj-color-fg, #333333);
+  --mqtt-card-border: var(--mj-color-border, #dddddd);
+  --mqtt-touch: 44px;
+}
+.mqtt-card {
+  box-sizing: border-box;
+  border: 1px solid var(--mqtt-card-border);
+  border-radius: 6px;
+  background: var(--mqtt-card-bg);
+  color: var(--mqtt-card-fg);
+  padding: 12px;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+.mqtt-card .form-horizontal .form-group { margin-bottom: 10px; }
+.mqtt-card .btn, .mqtt-card input[type=radio] + label { min-height: var(--mqtt-touch); }
+.mqtt-card table { width: 100%; max-width: 100%; }
+.mqtt-card .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+:root[data-theme="dark"] .mqtt-card {
+  background: var(--mj-color-surface, #2b2b2b);
+  color: var(--mj-color-fg, #e6e6e6);
+  border-color: var(--mj-color-border, #444444);
+}
+@media (max-width: 767px) {
+  .mqtt-card { padding: 10px; }
+  .mqtt-card .form-horizontal .control-label,
+  .mqtt-card .form-horizontal .col-lg-2,
+  .mqtt-card .form-horizontal .col-md-4,
+  .mqtt-card .form-horizontal .col-lg-10,
+  .mqtt-card .form-horizontal .col-md-8 { float: none; width: 100%; text-align: left; }
+  .mqtt-card .btn { width: 100%; }
+}
